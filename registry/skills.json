@@ -1,0 +1,26 @@
+{
+  "version": "1.0.0",
+  "sources": [
+    {
+      "id": "awesome-copilot",
+      "name": "Awesome Copilot (Curated)",
+      "repo": "github/awesome-copilot",
+      "description": "Community-curated Copilot customizations — agents, instructions, skills",
+      "license": "MIT",
+      "install": "sparse-clone",
+      "picks": {
+        "agents": ["critical-thinking", "debug", "devils-advocate", "planner", "gem-orchestrator", "gem-reviewer", "code-tour", "se-security-reviewer"],
+        "skills": ["boost-prompt", "breakdown-plan", "create-implementation-plan", "documentation-writer", "conventional-commit", "context-map", "create-readme", "create-specification", "doublecheck", "first-ask", "cli-mastery", "autoresearch", "architecture-blueprint-generator"],
+        "instructions": ["code-review-generic", "context-engineering", "memory-bank", "docker", "devops", "github-actions"]
+      }
+    },
+    {
+      "id": "agency-agents",
+      "name": "Agency Agents",
+      "repo": "msitarzewski/agency-agents",
+      "description": "55 agent personas across engineering, testing, design, strategy",
+      "license": "MIT",
+      "install": "clone"
+    }
+  ]
+}

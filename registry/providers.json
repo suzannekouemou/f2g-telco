@@ -1,0 +1,73 @@
+{
+  "version": "1.0.0",
+  "providers": [
+    {
+      "id": "copilot",
+      "name": "GitHub Copilot",
+      "description": "GitHub Copilot subscription — Claude, GPT, Gemini, Grok models",
+      "free": false,
+      "setup": "Run: crush login copilot",
+      "models": {
+        "large": "copilot/claude-opus-4.6",
+        "small": "copilot/claude-haiku-4.5",
+        "reasoning": "copilot/claude-opus-4.6"
+      },
+      "tools": ["crush", "kiro"]
+    },
+    {
+      "id": "ollama",
+      "name": "Ollama (Local)",
+      "description": "Run models locally — free, private, no API keys",
+      "free": true,
+      "setup": "Install from https://ollama.ai then: ollama pull qwen3:8b",
+      "models": {
+        "large": "ollama/qwen3:32b",
+        "small": "ollama/qwen3:8b",
+        "reasoning": "ollama/qwen3:32b"
+      },
+      "providerConfig": {
+        "type": "openai",
+        "baseUrl": "http://localhost:11434/v1",
+        "apiKey": "ollama"
+      },
+      "tools": ["crush"]
+    },
+    {
+      "id": "nim",
+      "name": "NVIDIA NIM",
+      "description": "NVIDIA hosted models — free tier with 1000 credits",
+      "free": true,
+      "setup": "Get API key at https://build.nvidia.com/",
+      "requiresEnv": ["NVIDIA_API_KEY"],
+      "models": {
+        "large": "nvidia/llama-3.3-70b-instruct",
+        "small": "nvidia/llama-3.3-70b-instruct",
+        "reasoning": "nvidia/deepseek-ai/deepseek-r1"
+      },
+      "providerConfig": {
+        "type": "openai",
+        "baseUrl": "https://integrate.api.nvidia.com/v1",
+        "envKey": "NVIDIA_API_KEY"
+      },
+      "tools": ["crush"]
+    },
+    {
+      "id": "openai-compat",
+      "name": "OpenAI-Compatible",
+      "description": "Any OpenAI-compatible API endpoint",
+      "free": null,
+      "setup": "Provide your base URL and API key",
+      "requiresEnv": ["CUSTOM_API_KEY"],
+      "models": {
+        "large": "custom/default",
+        "small": "custom/default"
+      },
+      "providerConfig": {
+        "type": "openai",
+        "baseUrl": "PROMPT_USER",
+        "envKey": "CUSTOM_API_KEY"
+      },
+      "tools": ["crush"]
+    }
+  ]
+}

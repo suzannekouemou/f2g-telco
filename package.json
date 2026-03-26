@@ -1,0 +1,42 @@
+{
+  "name": "f2g-telco",
+  "version": "0.1.0",
+  "description": "CLI tool to supercharge AI coding environments — installs MCPs, skills, agents, and memory pipelines",
+  "type": "module",
+  "bin": {
+    "f2g-telco": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx src/index.ts",
+    "start": "node dist/index.js",
+    "lint": "eslint src/",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": ["ai", "mcp", "cli", "copilot", "ollama", "nvidia-nim", "crush", "kiro", "agents", "skills"],
+  "author": "suzannekouemou",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/suzannekouemou/f2g-telco.git"
+  },
+  "dependencies": {
+    "chalk": "^5.4.0",
+    "commander": "^13.1.0",
+    "fs-extra": "^11.3.0",
+    "inquirer": "^12.6.0",
+    "ora": "^8.2.0",
+    "semver": "^7.7.0"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^11.0.4",
+    "@types/node": "^22.0.0",
+    "@types/semver": "^7.5.8",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "files": ["dist/", "registry/", "templates/", "README.md", "LICENSE"]
+}

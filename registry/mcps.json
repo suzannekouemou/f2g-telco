@@ -1,0 +1,120 @@
+{
+  "version": "1.0.0",
+  "mcps": [
+    {
+      "id": "mem0",
+      "name": "mem0",
+      "description": "Long-term memory across sessions",
+      "install": "npm install -g mem0-mcp-server",
+      "command": "mem0-mcp-server",
+      "requiresEnv": ["MEM0_API_KEY"],
+      "envSetup": "Get free API key at https://app.mem0.ai/",
+      "category": "memory",
+      "free": true
+    },
+    {
+      "id": "context7",
+      "name": "context7",
+      "description": "Library documentation lookup — up-to-date docs for any package",
+      "install": "npm install -g context7-mcp",
+      "command": "context7-mcp",
+      "requiresEnv": [],
+      "category": "knowledge",
+      "free": true
+    },
+    {
+      "id": "sequential-thinking",
+      "name": "sequential-thinking",
+      "description": "Complex multi-step reasoning with branching and revision",
+      "install": "npm install -g mcp-server-sequential-thinking",
+      "command": "mcp-server-sequential-thinking",
+      "requiresEnv": [],
+      "category": "reasoning",
+      "free": true
+    },
+    {
+      "id": "memory",
+      "name": "memory",
+      "description": "Knowledge graph — entities and relations",
+      "install": "npm install -g mcp-server-memory",
+      "command": "mcp-server-memory",
+      "requiresEnv": [],
+      "category": "memory",
+      "free": true
+    },
+    {
+      "id": "filesystem",
+      "name": "filesystem",
+      "description": "File operations — read, write, search",
+      "install": "npm install -g mcp-server-filesystem",
+      "command": "mcp-server-filesystem",
+      "requiresEnv": [],
+      "category": "core",
+      "free": true
+    },
+    {
+      "id": "fetch",
+      "name": "fetch",
+      "description": "HTTP requests — fetch URLs and APIs",
+      "install": "npm install -g mcp-server-fetch",
+      "command": "mcp-server-fetch",
+      "requiresEnv": [],
+      "category": "core",
+      "free": true
+    },
+    {
+      "id": "github",
+      "name": "github",
+      "description": "GitHub PRs, issues, commits, branches",
+      "install": "npm install -g mcp-server-github",
+      "command": "mcp-server-github",
+      "requiresEnv": ["GITHUB_PERSONAL_ACCESS_TOKEN"],
+      "envSetup": "Create at https://github.com/settings/tokens",
+      "category": "dev",
+      "free": true
+    },
+    {
+      "id": "playwright",
+      "name": "playwright",
+      "description": "Browser automation and E2E testing",
+      "install": "npm install -g playwright-mcp",
+      "command": "playwright-mcp",
+      "requiresEnv": [],
+      "category": "testing",
+      "free": true
+    },
+    {
+      "id": "mermaid",
+      "name": "mermaid",
+      "description": "Render mermaid diagrams to PNG/SVG",
+      "install": "npm install -g mermaid-mcp-server",
+      "command": "mermaid-mcp-server",
+      "requiresEnv": [],
+      "env": {"CONTENT_IMAGE_SUPPORTED": "false"},
+      "category": "docs",
+      "free": true
+    },
+    {
+      "id": "gitnexus",
+      "name": "gitnexus",
+      "description": "Codebase knowledge graph — dependency and call-chain analysis",
+      "install": "npm install -g gitnexus",
+      "command": "npx",
+      "args": ["gitnexus", "mcp"],
+      "requiresEnv": [],
+      "category": "dev",
+      "free": true
+    },
+    {
+      "id": "contextgraph",
+      "name": "contextgraph",
+      "description": "Governed shared memory — provenance, entity extraction, trust scoring",
+      "install": "pip install contextgraph[server,mcp]",
+      "command": "contextgraph-mcp",
+      "requiresEnv": [],
+      "category": "memory",
+      "free": true,
+      "python": true
+    }
+  ]
+}
