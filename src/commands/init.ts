@@ -5,7 +5,7 @@ import path from 'path';
 import os from 'os';
 import { execSync } from 'child_process';
 import { detectEnvironment } from '../utils/detect.js';
-import { log } from '../utils/logger.js';
+import { log, isVerbose } from '../utils/logger.js';
 import { saveConfig, loadConfig, getToolPaths, type F2GConfig } from '../utils/config.js';
 import { installMcps, writeToolConfig } from '../installers/mcps.js';
 import { installSkills } from '../installers/skills.js';
@@ -219,6 +219,46 @@ async function guidedOnboarding(
 }
 
 export async function initCommand(options: InitOptions) {
+  try {
+    await runInit(options);
+  } catch (err) {
+    handleInitError(err);
+    process.exit(1);
+  }
+}
+
+function handleInitError(err: unknown): void {
+  const message = err instanceof Error ? err.message : String(err);
+  
+  // Network errors
+  if (message.includes('ENOTFOUND') || message.includes('getaddrinfo') || message.includes('ECONNREFUSED')) {
+    log.error('No internet connection');
+    log.dim('  Check your network and try again. Some MCPs require downloading packages.');
+    return;
+  }
+  
+  // Git not installed
+  if (message.includes('git') && (message.includes('ENOENT') || message.includes('not found'))) {
+    log.error('Git is not installed');
+    log.dim('  Install Git first: https://git-scm.com/downloads');
+    return;
+  }
+  
+  // npm permission errors
+  if (message.includes('EACCES') || message.includes('permission denied')) {
+    log.error('Permission denied during installation');
+    log.dim('  F2G-Telco installs to ~/.local — check your permissions.');
+    return;
+  }
+  
+  // Generic error
+  log.error(message);
+  if (isVerbose() && err instanceof Error && err.stack) {
+    console.error(chalk.dim(err.stack));
+  }
+}
+
+async function runInit(options: InitOptions) {
   console.log(chalk.bold(`
   ╔═══════════════════════════════════════╗
   ║         F2G-Telco  v0.1.0            ║

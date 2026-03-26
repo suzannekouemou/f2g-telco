@@ -1,16 +1,42 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
+import chalk from 'chalk';
 import { initCommand } from './commands/init.js';
 import { doctorCommand } from './commands/doctor.js';
 import { listCommand } from './commands/list.js';
 import { updateCommand } from './commands/update.js';
+import { setVerbose, log } from './utils/logger.js';
+
+// Handle Ctrl+C gracefully
+process.on('SIGINT', () => {
+  console.log(chalk.yellow('\n\n⚠ Cancelled by user'));
+  console.log(chalk.dim('  Partial configuration may remain. Run `f2g-telco init` to restart.'));
+  process.exit(130);
+});
+
+// Handle uncaught errors
+process.on('uncaughtException', (err) => {
+  log.error(`Unexpected error: ${err.message}`);
+  if (process.env.F2G_VERBOSE === '1') {
+    console.error(err.stack);
+  }
+  process.exit(1);
+});
 
 const program = new Command();
 
 program
   .name('f2g-telco')
   .description('Supercharge your AI coding environment — MCPs, skills, agents, memory pipelines')
-  .version('0.1.0');
+  .version('0.1.0')
+  .option('--verbose', 'Enable debug output')
+  .hook('preAction', (thisCommand) => {
+    const opts = thisCommand.opts();
+    if (opts.verbose) {
+      setVerbose(true);
+      process.env.F2G_VERBOSE = '1';
+    }
+  });
 
 program
   .command('init')
