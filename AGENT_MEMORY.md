@@ -235,3 +235,29 @@ Implemented guided onboarding flow with boxed panels for API key setup:
 
 ### Priority
 High — without this, first-time users on Linux/WSL will get permission errors on every MCP install.
+
+## NEXT TASK — npm Publish Prep + Error Handling
+
+### 1. npm publish readiness
+- Verify `"files"` field in package.json includes everything needed: `dist/`, `registry/`, `templates/`, `README.md`, `LICENSE`
+- Ensure `"bin"` entry has correct shebang (`#!/usr/bin/env node`) in dist/index.js
+- Add `"publishConfig": { "access": "public" }` to package.json
+- Test with `npm pack --dry-run` to verify the tarball contents
+- Add `.npmignore` if needed (exclude tests, src, .github)
+
+### 2. Error handling + edge cases
+- Wrap the entire init flow in try/catch with graceful Ctrl+C handling
+- Handle no internet (git clone fails, npm install fails) — show clear message
+- Handle missing git — show "Install git first" instead of crash
+- Handle partial completion — if user Ctrl+C mid-install, don't leave broken config
+- Add `--verbose` flag for debug output
+
+### 3. Add `f2g-telco add <mcp>` command
+- Install a single MCP by id: `f2g-telco add mem0`
+- Prompt for API key if needed (reuse guided onboarding box)
+- Update the existing tool config (don't overwrite)
+- Update INVENTORY.md
+
+### Implementation notes
+- Keep it minimal — don't over-engineer
+- Commit after each item
