@@ -45,6 +45,8 @@ npx f2g-telco init
 | **Ollama** | ✅ Free | Qwen3, Llama, Mistral, etc. | Local models, private |
 | **NVIDIA NIM** | ✅ Free tier | Llama 3.3 70B, DeepSeek R1, Kimi K2.5 | 1000 free credits |
 | **Google AI Studio** | ✅ Free tier | Gemini 2.5 Pro/Flash | Free key from aistudio.google.com |
+| **Groq** | ✅ Free tier | Llama 3.3 70B, Llama 3.1 8B | Ultra-fast inference |
+| **Cerebras** | ✅ Free tier | Llama 3.3 70B, Llama 3.1 8B | Fastest inference, 30 req/min |
 | **OpenAI-Compatible** | Varies | Any compatible model | LM Studio, vLLM, custom endpoints |
 
 ## MCP Servers Included

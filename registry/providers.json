@@ -4,24 +4,39 @@
     {
       "id": "copilot",
       "name": "GitHub Copilot",
-      "description": "GitHub Copilot subscription — Claude, GPT, Gemini, Grok models",
+      "description": "GitHub Copilot subscription \u2014 Claude, GPT, Gemini, Grok models",
       "free": false,
       "setup": "Run: crush login copilot",
       "models": {
-        "large": { "model": "claude-opus-4.6", "provider": "copilot" },
-        "small": { "model": "claude-haiku-4.5", "provider": "copilot" }
+        "large": {
+          "model": "claude-opus-4.6",
+          "provider": "copilot"
+        },
+        "small": {
+          "model": "claude-haiku-4.5",
+          "provider": "copilot"
+        }
       },
-      "tools": ["crush", "kiro"]
+      "tools": [
+        "crush",
+        "kiro"
+      ]
     },
     {
       "id": "ollama",
       "name": "Ollama (Local)",
-      "description": "Run models locally — free, private, no API keys needed",
+      "description": "Run models locally \u2014 free, private, no API keys needed",
       "free": true,
       "setup": "Install from https://ollama.ai then: ollama pull qwen3:8b",
       "models": {
-        "large": { "model": "qwen3:32b", "provider": "ollama" },
-        "small": { "model": "qwen3:8b", "provider": "ollama" }
+        "large": {
+          "model": "qwen3:32b",
+          "provider": "ollama"
+        },
+        "small": {
+          "model": "qwen3:8b",
+          "provider": "ollama"
+        }
       },
       "crushProvider": {
         "ollama": {
@@ -29,29 +44,45 @@
           "base_url": "http://localhost:11434/v1",
           "api_key": "ollama",
           "models": [
-            { "id": "qwen3:32b", "name": "Qwen3 32B" },
-            { "id": "qwen3:8b", "name": "Qwen3 8B" }
+            {
+              "id": "qwen3:32b",
+              "name": "Qwen3 32B"
+            },
+            {
+              "id": "qwen3:8b",
+              "name": "Qwen3 8B"
+            }
           ]
         }
       },
-      "tools": ["crush"]
+      "tools": [
+        "crush"
+      ]
     },
     {
       "id": "nim",
       "name": "NVIDIA NIM",
-      "description": "NVIDIA hosted models — free tier with 1000 credits",
+      "description": "NVIDIA hosted models \u2014 free tier with 1000 credits",
       "free": true,
       "setup": "Get free API key at https://build.nvidia.com/",
-      "requiresEnv": ["NVIDIA_API_KEY"],
+      "requiresEnv": [
+        "NVIDIA_API_KEY"
+      ],
       "setupSteps": [
         "Go to: https://build.nvidia.com/",
         "Sign up for a free account",
-        "Click your avatar → API Key → Generate",
+        "Click your avatar \u2192 API Key \u2192 Generate",
         "Copy the key and paste below"
       ],
       "models": {
-        "large": { "model": "nvidia/llama-3.3-70b-instruct", "provider": "nvidia" },
-        "small": { "model": "nvidia/llama-3.3-70b-instruct", "provider": "nvidia" }
+        "large": {
+          "model": "nvidia/llama-3.3-70b-instruct",
+          "provider": "nvidia"
+        },
+        "small": {
+          "model": "nvidia/llama-3.3-70b-instruct",
+          "provider": "nvidia"
+        }
       },
       "crushProvider": {
         "nvidia": {
@@ -59,21 +90,34 @@
           "base_url": "https://integrate.api.nvidia.com/v1",
           "api_key": "env:NVIDIA_API_KEY",
           "models": [
-            { "id": "nvidia/llama-3.3-70b-instruct", "name": "Llama 3.3 70B" },
-            { "id": "deepseek-ai/deepseek-r1", "name": "DeepSeek R1" },
-            { "id": "moonshotai/kimi-k2.5", "name": "Kimi K2.5" }
+            {
+              "id": "nvidia/llama-3.3-70b-instruct",
+              "name": "Llama 3.3 70B"
+            },
+            {
+              "id": "deepseek-ai/deepseek-r1",
+              "name": "DeepSeek R1"
+            },
+            {
+              "id": "moonshotai/kimi-k2.5",
+              "name": "Kimi K2.5"
+            }
           ]
         }
       },
-      "tools": ["crush"]
+      "tools": [
+        "crush"
+      ]
     },
     {
       "id": "google-ai",
       "name": "Google AI Studio",
-      "description": "Gemini models via Google AI Studio — free tier available",
+      "description": "Gemini models via Google AI Studio \u2014 free tier available",
       "free": true,
       "setup": "Get free API key at https://aistudio.google.com/apikey",
-      "requiresEnv": ["GOOGLE_AI_API_KEY"],
+      "requiresEnv": [
+        "GOOGLE_AI_API_KEY"
+      ],
       "setupSteps": [
         "Go to: https://aistudio.google.com/apikey",
         "Sign in with your Google account",
@@ -81,8 +125,14 @@
         "Copy the key and paste below"
       ],
       "models": {
-        "large": { "model": "gemini-2.5-pro", "provider": "google-ai" },
-        "small": { "model": "gemini-2.5-flash", "provider": "google-ai" }
+        "large": {
+          "model": "gemini-2.5-pro",
+          "provider": "google-ai"
+        },
+        "small": {
+          "model": "gemini-2.5-flash",
+          "provider": "google-ai"
+        }
       },
       "crushProvider": {
         "google-ai": {
@@ -90,12 +140,112 @@
           "base_url": "https://generativelanguage.googleapis.com/v1beta/openai",
           "api_key": "env:GOOGLE_AI_API_KEY",
           "models": [
-            { "id": "gemini-2.5-pro", "name": "Gemini 2.5 Pro" },
-            { "id": "gemini-2.5-flash", "name": "Gemini 2.5 Flash" }
+            {
+              "id": "gemini-2.5-pro",
+              "name": "Gemini 2.5 Pro"
+            },
+            {
+              "id": "gemini-2.5-flash",
+              "name": "Gemini 2.5 Flash"
+            }
           ]
         }
       },
-      "tools": ["crush"]
+      "tools": [
+        "crush"
+      ]
+    },
+    {
+      "id": "groq",
+      "name": "Groq",
+      "description": "Ultra-fast inference \u2014 free tier with generous limits",
+      "free": true,
+      "setup": "Get free API key at https://console.groq.com/keys",
+      "requiresEnv": [
+        "GROQ_API_KEY"
+      ],
+      "setupSteps": [
+        "Go to: https://console.groq.com/keys",
+        "Sign up for a free account",
+        "Click 'Create API Key'",
+        "Copy the key and paste below"
+      ],
+      "models": {
+        "large": {
+          "model": "llama-3.3-70b-versatile",
+          "provider": "groq"
+        },
+        "small": {
+          "model": "llama-3.1-8b-instant",
+          "provider": "groq"
+        }
+      },
+      "crushProvider": {
+        "groq": {
+          "type": "openai-compat",
+          "base_url": "https://api.groq.com/openai/v1",
+          "api_key": "env:GROQ_API_KEY",
+          "models": [
+            {
+              "id": "llama-3.3-70b-versatile",
+              "name": "Llama 3.3 70B"
+            },
+            {
+              "id": "llama-3.1-8b-instant",
+              "name": "Llama 3.1 8B"
+            }
+          ]
+        }
+      },
+      "tools": [
+        "crush"
+      ]
+    },
+    {
+      "id": "cerebras",
+      "name": "Cerebras",
+      "description": "Fastest inference available \u2014 free tier with 30 req/min",
+      "free": true,
+      "setup": "Get free API key at https://cloud.cerebras.ai/",
+      "requiresEnv": [
+        "CEREBRAS_API_KEY"
+      ],
+      "setupSteps": [
+        "Go to: https://cloud.cerebras.ai/",
+        "Sign up for a free account",
+        "Go to API Keys \u2192 Create Key",
+        "Copy the key and paste below"
+      ],
+      "models": {
+        "large": {
+          "model": "llama-3.3-70b",
+          "provider": "cerebras"
+        },
+        "small": {
+          "model": "llama-3.1-8b",
+          "provider": "cerebras"
+        }
+      },
+      "crushProvider": {
+        "cerebras": {
+          "type": "openai-compat",
+          "base_url": "https://api.cerebras.ai/v1",
+          "api_key": "env:CEREBRAS_API_KEY",
+          "models": [
+            {
+              "id": "llama-3.3-70b",
+              "name": "Llama 3.3 70B"
+            },
+            {
+              "id": "llama-3.1-8b",
+              "name": "Llama 3.1 8B"
+            }
+          ]
+        }
+      },
+      "tools": [
+        "crush"
+      ]
     },
     {
       "id": "openai-compat",
@@ -103,10 +253,19 @@
       "description": "Any OpenAI-compatible API endpoint (LM Studio, vLLM, etc.)",
       "free": null,
       "setup": "Provide your base URL and API key",
-      "requiresEnv": ["CUSTOM_API_KEY", "CUSTOM_BASE_URL"],
+      "requiresEnv": [
+        "CUSTOM_API_KEY",
+        "CUSTOM_BASE_URL"
+      ],
       "models": {
-        "large": { "model": "PROMPT_USER", "provider": "custom" },
-        "small": { "model": "PROMPT_USER", "provider": "custom" }
+        "large": {
+          "model": "PROMPT_USER",
+          "provider": "custom"
+        },
+        "small": {
+          "model": "PROMPT_USER",
+          "provider": "custom"
+        }
       },
       "crushProvider": {
         "custom": {
@@ -115,7 +274,9 @@
           "api_key": "env:CUSTOM_API_KEY"
         }
       },
-      "tools": ["crush"]
+      "tools": [
+        "crush"
+      ]
     }
   ]
 }

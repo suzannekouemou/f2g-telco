@@ -5,6 +5,7 @@ import { initCommand } from './commands/init.js';
 import { doctorCommand } from './commands/doctor.js';
 import { listCommand } from './commands/list.js';
 import { updateCommand } from './commands/update.js';
+import { statusCommand } from './commands/status.js';
 import { addCommand } from './commands/add.js';
 import { removeCommand } from './commands/remove.js';
 import { setVerbose, log } from './utils/logger.js';
@@ -76,5 +77,10 @@ program
   .command('remove <mcp>')
   .description('Remove a single MCP by id (e.g., f2g-telco remove mem0)')
   .action(removeCommand);
+
+program
+  .command('status')
+  .description('Show current configuration at a glance')
+  .action(statusCommand);
 
 program.parse();
