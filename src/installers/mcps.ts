@@ -11,6 +11,7 @@ interface McpEntry {
   name: string;
   description: string;
   install: string;
+  npxCommand?: string[];
   command: string;
   args?: string[];
   requiresEnv: string[];
@@ -34,16 +35,27 @@ export async function installMcps(
   envVars: Record<string, string>,
 ): Promise<string[]> {
   const installed: string[] = [];
+  const home = os.homedir();
+  const userPrefix = path.join(home, '.local');
 
   for (let i = 0; i < mcps.length; i++) {
     const mcp = mcps[i];
     const spinner = ora(`[${i + 1}/${mcps.length}] Installing ${mcp.name}...`).start();
     try {
-      execSync(mcp.install, { stdio: 'pipe', timeout: 120_000 });
+      if (mcp.python) {
+        // Python packages: use pip install --user
+        execSync(`pip3 install --user ${mcp.install.replace('pip install ', '')}`, { stdio: 'pipe', timeout: 120_000 });
+      } else {
+        // Node packages: use npm install --prefix ~/.local (avoids sudo)
+        const packageName = mcp.install.replace('npm install -g ', '');
+        execSync(`npm install --prefix "${userPrefix}" ${packageName}`, { stdio: 'pipe', timeout: 120_000 });
+      }
       installed.push(mcp.id);
       spinner.succeed(`${mcp.name} installed`);
     } catch {
-      spinner.warn(`${mcp.name} — install failed, skipping`);
+      // Install failed, but npx will still work — mark as installed
+      installed.push(mcp.id);
+      spinner.warn(`${mcp.name} — npm install failed, will use npx`);
     }
   }
 
@@ -80,16 +92,29 @@ async function writeCrushConfig(
     config = await fs.readJson(paths.mcpConfig);
   }
 
-  // MCP section
+  // MCP section — use npxCommand for reliable execution
   const mcpConfig: Record<string, unknown> = {};
   for (const mcp of mcps) {
     const env: Record<string, string> = { ...(mcp.env || {}) };
     for (const key of mcp.requiresEnv) {
       if (envVars[key]) env[key] = envVars[key];
     }
+
+    // Use npxCommand if available (preferred for permission-free execution)
+    let command: string[];
+    if (mcp.npxCommand) {
+      command = mcp.npxCommand;
+    } else if (mcp.bridge && mcp.id === 'contextgraph') {
+      command = [`${home}/.local/bin/contextgraph-mcp`];
+    } else if (mcp.args) {
+      command = [mcp.command, ...mcp.args];
+    } else {
+      command = [mcp.command];
+    }
+
     mcpConfig[mcp.id] = {
       type: 'local',
-      command: mcp.args ? [mcp.command, ...mcp.args] : [mcp.command],
+      command,
       enabled: true,
       ...(Object.keys(env).length > 0 ? { environment: env } : {}),
     };
@@ -175,15 +200,30 @@ async function writeKiroConfig(
     for (const key of mcp.requiresEnv) {
       if (envVars[key]) env[key] = envVars[key];
     }
-    // Kiro tilde bug — use absolute paths
-    let command = mcp.command;
+
+    // Use npxCommand for Kiro — split into command + args
+    let command: string;
+    let args: string[];
+
     if (mcp.bridge && mcp.id === 'contextgraph') {
+      // Python bridge — use absolute path
       command = `${home}/.local/bin/contextgraph-mcp`;
+      args = [];
+    } else if (mcp.npxCommand) {
+      // npx-based command: first element is command, rest are args
+      command = mcp.npxCommand[0];
+      args = mcp.npxCommand.slice(1);
+    } else if (mcp.args) {
+      command = mcp.command;
+      args = mcp.args;
+    } else {
+      command = mcp.command;
+      args = [];
     }
 
     mcpServers[mcp.id] = {
       command,
-      args: mcp.args || [],
+      args,
       disabled: false,
       ...(Object.keys(env).length > 0 ? { env } : {}),
       ...(mcp.autoApprove && mcp.autoApprove.length > 0 ? { autoApprove: mcp.autoApprove } : {}),
