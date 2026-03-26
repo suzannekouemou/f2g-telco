@@ -34,7 +34,7 @@ export async function logSection(title: string): Promise<void> {
 
 export async function logSystemInfo(): Promise<void> {
   await logSection('F2G-Telco Session');
-  await logToFile('INFO', `Version: 0.1.0`);
+  await logToFile('INFO', `Version: 0.1.1`);
   await logToFile('INFO', `OS: ${os.platform()} ${os.arch()} ${os.release()}`);
   await logToFile('INFO', `Node: ${process.version}`);
   await logToFile('INFO', `Home: ${os.homedir()}`);
