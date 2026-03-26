@@ -18,6 +18,7 @@ program
   .option('--provider <provider>', 'AI provider: copilot, ollama, nim, openai-compat')
   .option('--tool <tool>', 'Target tool: crush, kiro')
   .option('--yes', 'Skip prompts, use defaults')
+  .option('--reconfigure', 'Re-run API key collection for existing setup')
   .action(initCommand);
 
 program

@@ -1,5 +1,5 @@
 {
-  "version": "1.1.0",
+  "version": "1.2.0",
   "providers": [
     {
       "id": "copilot",
@@ -43,6 +43,12 @@
       "free": true,
       "setup": "Get free API key at https://build.nvidia.com/",
       "requiresEnv": ["NVIDIA_API_KEY"],
+      "setupSteps": [
+        "Go to: https://build.nvidia.com/",
+        "Sign up for a free account",
+        "Click your avatar → API Key → Generate",
+        "Copy the key and paste below"
+      ],
       "models": {
         "large": { "model": "nvidia/llama-3.3-70b-instruct", "provider": "nvidia" },
         "small": { "model": "nvidia/llama-3.3-70b-instruct", "provider": "nvidia" }
@@ -68,6 +74,12 @@
       "free": true,
       "setup": "Get free API key at https://aistudio.google.com/apikey",
       "requiresEnv": ["GOOGLE_AI_API_KEY"],
+      "setupSteps": [
+        "Go to: https://aistudio.google.com/apikey",
+        "Sign in with your Google account",
+        "Click 'Create API Key'",
+        "Copy the key and paste below"
+      ],
       "models": {
         "large": { "model": "gemini-2.5-pro", "provider": "google-ai" },
         "small": { "model": "gemini-2.5-flash", "provider": "google-ai" }

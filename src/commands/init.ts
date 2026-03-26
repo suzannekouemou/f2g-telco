@@ -6,7 +6,7 @@ import os from 'os';
 import { execSync } from 'child_process';
 import { detectEnvironment } from '../utils/detect.js';
 import { log } from '../utils/logger.js';
-import { saveConfig, getToolPaths, type F2GConfig } from '../utils/config.js';
+import { saveConfig, loadConfig, getToolPaths, type F2GConfig } from '../utils/config.js';
 import { installMcps, writeToolConfig } from '../installers/mcps.js';
 import { installSkills } from '../installers/skills.js';
 
@@ -18,6 +18,204 @@ interface InitOptions {
   provider?: string;
   tool?: string;
   yes?: boolean;
+  reconfigure?: boolean;
+}
+
+interface McpEntry {
+  id: string;
+  name: string;
+  description: string;
+  requiresEnv: string[];
+  setupSteps?: string[];
+  envSetup?: string;
+  autoApprove?: string[];
+  category?: string;
+  free?: boolean;
+  python?: boolean;
+  bridge?: boolean;
+  install?: string;
+  command?: string;
+  args?: string[];
+  env?: Record<string, string>;
+}
+
+interface ProviderEntry {
+  id: string;
+  name: string;
+  description: string;
+  free: boolean | null;
+  setup?: string;
+  setupSteps?: string[];
+  requiresEnv?: string[];
+  tools: string[];
+  models?: Record<string, { model: string; provider: string }>;
+  crushProvider?: Record<string, unknown>;
+}
+
+interface OnboardingResult {
+  configured: string[];
+  skipped: string[];
+}
+
+/**
+ * Draw a boxed panel for guided API key setup
+ */
+function drawSetupBox(name: string, description: string, steps: string[]): void {
+  const width = 60;
+  const topBorder = '╔' + '═'.repeat(width - 2) + '╗';
+  const bottomBorder = '╚' + '═'.repeat(width - 2) + '╝';
+  const emptyLine = '║' + ' '.repeat(width - 2) + '║';
+
+  const padLine = (text: string): string => {
+    const visible = text.replace(/\x1B\[[0-9;]*m/g, ''); // Strip ANSI for length calc
+    const padding = width - 2 - visible.length;
+    return '║  ' + text + ' '.repeat(Math.max(0, padding - 2)) + '║';
+  };
+
+  console.log('\n' + chalk.cyan(topBorder));
+  console.log(chalk.cyan(padLine(chalk.bold(`📦 ${name}`) + chalk.dim(` — ${description}`))));
+  console.log(chalk.cyan(emptyLine));
+
+  steps.forEach((step, i) => {
+    const numbered = `${i + 1}. ${step}`;
+    console.log(chalk.cyan(padLine(numbered)));
+  });
+
+  console.log(chalk.cyan(emptyLine));
+  console.log(chalk.cyan(bottomBorder));
+}
+
+/**
+ * Prompt for a single MCP/provider API key with guided setup
+ */
+async function promptApiKey(
+  name: string,
+  description: string,
+  envKey: string,
+  steps: string[],
+): Promise<{ key: string; skipped: boolean }> {
+  drawSetupBox(name, description, steps);
+
+  const { action } = await inquirer.prompt([{
+    type: 'list',
+    name: 'action',
+    message: 'What would you like to do?',
+    choices: [
+      { name: chalk.green('Enter API key'), value: 'enter' },
+      { name: chalk.yellow('Skip — install without this service'), value: 'skip' },
+    ],
+  }]);
+
+  if (action === 'skip') {
+    return { key: '', skipped: true };
+  }
+
+  const { value } = await inquirer.prompt([{
+    type: 'password',
+    name: 'value',
+    message: `${envKey}:`,
+    mask: '*',
+  }]);
+
+  return { key: value || '', skipped: !value };
+}
+
+/**
+ * Show the end summary of configured vs skipped services
+ */
+function showOnboardingSummary(results: OnboardingResult): void {
+  console.log('\n' + chalk.bold('  Configuration Summary:'));
+  console.log();
+
+  for (const name of results.configured) {
+    console.log(chalk.green(`    ✅ ${name}`) + chalk.dim(' (API key saved)'));
+  }
+
+  for (const name of results.skipped) {
+    console.log(chalk.yellow(`    ⏭️  ${name}`) + chalk.dim(' (skipped)'));
+  }
+
+  if (results.skipped.length > 0) {
+    console.log();
+    console.log(chalk.dim('  Skipped services can be added later with: f2g-telco init --reconfigure'));
+  }
+  console.log();
+}
+
+/**
+ * Guided onboarding flow for collecting API keys
+ */
+async function guidedOnboarding(
+  mcps: McpEntry[],
+  providerConfig: ProviderEntry | undefined,
+  existingEnvVars: Record<string, string>,
+): Promise<{ envVars: Record<string, string>; skippedMcps: Set<string> }> {
+  const envVars: Record<string, string> = { ...existingEnvVars };
+  const skippedMcps = new Set<string>();
+  const results: OnboardingResult = { configured: [], skipped: [] };
+
+  // First: handle provider API key if needed
+  if (providerConfig?.requiresEnv && providerConfig.requiresEnv.length > 0) {
+    for (const envKey of providerConfig.requiresEnv) {
+      if (process.env[envKey] || envVars[envKey]) {
+        results.configured.push(providerConfig.name);
+        continue;
+      }
+
+      const steps = providerConfig.setupSteps || [
+        providerConfig.setup || `Set up ${providerConfig.name}`,
+      ];
+
+      const { key, skipped } = await promptApiKey(
+        providerConfig.name,
+        providerConfig.description,
+        envKey,
+        steps,
+      );
+
+      if (skipped) {
+        results.skipped.push(providerConfig.name);
+      } else {
+        envVars[envKey] = key;
+        results.configured.push(providerConfig.name);
+      }
+    }
+  }
+
+  // Then: handle each MCP that requires an API key
+  for (const mcp of mcps) {
+    if (!mcp.requiresEnv || mcp.requiresEnv.length === 0) continue;
+
+    for (const envKey of mcp.requiresEnv) {
+      if (process.env[envKey] || envVars[envKey]) {
+        results.configured.push(mcp.name);
+        continue;
+      }
+
+      const steps = mcp.setupSteps || [
+        mcp.envSetup || `Get API key for ${mcp.name}`,
+      ];
+
+      const { key, skipped } = await promptApiKey(
+        mcp.name,
+        mcp.description,
+        envKey,
+        steps,
+      );
+
+      if (skipped) {
+        results.skipped.push(mcp.name);
+        skippedMcps.add(mcp.id);
+      } else {
+        envVars[envKey] = key;
+        results.configured.push(mcp.name);
+      }
+    }
+  }
+
+  showOnboardingSummary(results);
+
+  return { envVars, skippedMcps };
 }
 
 export async function initCommand(options: InitOptions) {
@@ -27,6 +225,40 @@ export async function initCommand(options: InitOptions) {
   ║   Supercharge your AI environment    ║
   ╚═══════════════════════════════════════╝
   `));
+
+  // Handle --reconfigure: jump straight to API key collection
+  if (options.reconfigure) {
+    const existingConfig = await loadConfig();
+    if (!existingConfig) {
+      log.error('No existing configuration found. Run `f2g-telco init` first.');
+      process.exit(1);
+    }
+
+    log.header('Reconfiguring API Keys');
+    const mcpRegistry = await fs.readJson(path.join(registryDir, 'mcps.json'));
+    const providers = await fs.readJson(path.join(registryDir, 'providers.json'));
+    const providerConfig = providers.providers.find((p: ProviderEntry) => p.id === existingConfig.provider);
+
+    const { envVars, skippedMcps } = await guidedOnboarding(mcpRegistry.mcps, providerConfig, {});
+
+    // Reinstall MCPs with new keys
+    log.header('Reinstalling MCP servers');
+    const mcpsToInstall = mcpRegistry.mcps.filter((mcp: McpEntry) =>
+      !skippedMcps.has(mcp.id) && mcp.requiresEnv.every((key: string) => envVars[key] || process.env[key])
+    );
+    const installedIds = await installMcps(mcpsToInstall, existingConfig.tool, envVars);
+
+    // Rewrite config
+    log.header('Updating configuration');
+    await writeToolConfig(mcpRegistry.mcps, installedIds, existingConfig.tool, envVars, providerConfig);
+
+    // Update saved config
+    existingConfig.installedMcps = installedIds;
+    await saveConfig(existingConfig);
+
+    log.success('Reconfiguration complete!');
+    return;
+  }
 
   // Step 1: Detect
   log.header('Step 1 — Detecting environment');
@@ -74,8 +306,8 @@ export async function initCommand(options: InitOptions) {
   let provider = options.provider;
   if (!provider) {
     const choices = providers.providers
-      .filter((p: { tools: string[] }) => p.tools.includes(tool!))
-      .map((p: { id: string; name: string; description: string; free: boolean | null }) => ({
+      .filter((p: ProviderEntry) => p.tools.includes(tool!))
+      .map((p: ProviderEntry) => ({
         name: `${p.name}${p.free === true ? chalk.green(' (free)') : p.free === false ? chalk.yellow(' (subscription)') : ''} — ${p.description}`,
         value: p.id,
       }));
@@ -88,49 +320,25 @@ export async function initCommand(options: InitOptions) {
     provider = selectedProvider;
   }
 
-  const providerConfig = providers.providers.find((p: { id: string }) => p.id === provider);
+  const providerConfig = providers.providers.find((p: ProviderEntry) => p.id === provider);
 
-  // Step 4: Collect API keys
-  log.header('Step 4 — API Keys');
-  const envVars: Record<string, string> = {};
+  // Step 4: Guided API key collection
+  log.header('Step 4 — Service Configuration');
   const mcpRegistry = await fs.readJson(path.join(registryDir, 'mcps.json'));
 
-  // Gather all required env vars
-  const allEnvs = new Map<string, { neededBy: string[]; setup?: string }>();
-  for (const mcp of mcpRegistry.mcps) {
-    for (const key of mcp.requiresEnv) {
-      if (!process.env[key]) {
-        const entry = allEnvs.get(key) || { neededBy: [] as string[], setup: mcp.envSetup };
-        entry.neededBy.push(mcp.name);
-        allEnvs.set(key, entry);
-      }
-    }
-  }
-  if (providerConfig?.requiresEnv) {
-    for (const key of providerConfig.requiresEnv) {
-      if (!process.env[key] && !allEnvs.has(key)) {
-        allEnvs.set(key, { neededBy: [providerConfig.name], setup: providerConfig.setup });
-      }
-    }
-  }
+  let envVars: Record<string, string> = {};
+  let skippedMcps = new Set<string>();
 
-  if (allEnvs.size > 0 && !options.yes) {
-    log.dim('Leave blank to skip MCPs that require this key.\n');
-    for (const [key, info] of allEnvs) {
-      const hint = info.setup ? chalk.dim(` (${info.setup})`) : '';
-      const { value } = await inquirer.prompt([{
-        type: 'password',
-        name: 'value',
-        message: `${key} — for ${info.neededBy.join(', ')}${hint}:`,
-      }]);
-      if (value) envVars[key] = value;
-    }
+  if (!options.yes) {
+    const result = await guidedOnboarding(mcpRegistry.mcps, providerConfig, {});
+    envVars = result.envVars;
+    skippedMcps = result.skippedMcps;
   }
 
   // Step 5: Install MCPs
   log.header('Step 5 — Installing MCP servers');
-  const mcpsToInstall = mcpRegistry.mcps.filter((mcp: { requiresEnv: string[] }) =>
-    mcp.requiresEnv.every((key: string) => envVars[key] || process.env[key])
+  const mcpsToInstall = mcpRegistry.mcps.filter((mcp: McpEntry) =>
+    !skippedMcps.has(mcp.id) && mcp.requiresEnv.every((key: string) => envVars[key] || process.env[key])
   );
   const installedIds = await installMcps(mcpsToInstall, tool!, envVars);
 

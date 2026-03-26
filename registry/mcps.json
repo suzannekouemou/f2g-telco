@@ -1,5 +1,5 @@
 {
-  "version": "1.1.0",
+  "version": "1.2.0",
   "mcps": [
     {
       "id": "mem0",
@@ -9,6 +9,12 @@
       "command": "mem0-mcp-server",
       "requiresEnv": ["MEM0_API_KEY"],
       "envSetup": "Get free API key at https://app.mem0.ai/",
+      "setupSteps": [
+        "Go to: https://app.mem0.ai/",
+        "Sign up for a free account",
+        "Go to Settings → API Keys → Create Key",
+        "Copy the key and paste below"
+      ],
       "category": "memory",
       "free": true,
       "autoApprove": ["add_memory", "search_memories", "get_memories"]
@@ -76,6 +82,12 @@
       "command": "mcp-server-github",
       "requiresEnv": ["GITHUB_PERSONAL_ACCESS_TOKEN"],
       "envSetup": "Create at https://github.com/settings/tokens",
+      "setupSteps": [
+        "Go to: https://github.com/settings/tokens",
+        "Click 'Generate new token (classic)'",
+        "Select scopes: repo, read:org",
+        "Copy the token and paste below"
+      ],
       "category": "dev",
       "free": true,
       "autoApprove": []
@@ -111,6 +123,12 @@
       "args": ["-y", "notion-mcp-server"],
       "requiresEnv": ["NOTION_TOKEN"],
       "envSetup": "Create integration at https://www.notion.so/my-integrations",
+      "setupSteps": [
+        "Go to: https://www.notion.so/my-integrations",
+        "Click 'New integration'",
+        "Give it a name, select workspace",
+        "Copy the 'Internal Integration Secret' and paste below"
+      ],
       "category": "productivity",
       "free": true,
       "autoApprove": []
