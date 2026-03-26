@@ -46,7 +46,13 @@ export async function doctorCommand() {
   // Tool
   log.header(`Tool: ${config.tool}`);
   const toolInstalled = config.tool === 'crush' ? env.tools.crush : env.tools.kiro;
-  check(`${config.tool} installed`, toolInstalled);
+  if (toolInstalled) {
+    check(`${config.tool} installed`, true);
+  } else {
+    check(`${config.tool} installed`, false, config.tool === 'crush'
+      ? 'Install: go install github.com/charmbracelet/crush@latest'
+      : 'Install: npm install -g @anthropic-ai/kiro');
+  }
 
   const paths = getToolPaths(config.tool);
   check('Config directory exists', await fs.pathExists(paths.config), paths.config);

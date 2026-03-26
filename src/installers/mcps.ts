@@ -43,12 +43,15 @@ export async function installMcps(
     const spinner = ora(`[${i + 1}/${mcps.length}] Installing ${mcp.name}...`).start();
     try {
       if (mcp.python) {
-        // Python packages: use pip install --user
-        execSync(`pip3 install --user ${mcp.install.replace('pip install ', '')}`, { stdio: 'pipe', timeout: 120_000 });
+        execSync('pip3 install --user contextgraph[server,mcp] --quiet --break-system-packages 2>/dev/null || pip3 install --user contextgraph[server,mcp] --quiet', { stdio: 'pipe', timeout: 120_000 });
       } else {
-        // Node packages: use npm install --prefix ~/.local (avoids sudo)
-        const packageName = mcp.install.replace('npm install -g ', '');
-        execSync(`npm install --prefix "${userPrefix}" ${packageName}`, { stdio: 'pipe', timeout: 120_000 });
+        const pkg = mcp.install.replace('npm install -g ', '');
+        // Try global first, then user prefix, then skip (npx fallback)
+        try {
+          execSync(`npm install -g ${pkg} 2>/dev/null`, { stdio: 'pipe', timeout: 120_000 });
+        } catch {
+          execSync(`npm install --prefix "${userPrefix}" ${pkg}`, { stdio: 'pipe', timeout: 120_000 });
+        }
       }
       installed.push(mcp.id);
       spinner.succeed(`${mcp.name} installed`);
