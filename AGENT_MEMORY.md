@@ -203,3 +203,59 @@ Need to: pip install contextgraph, create the bridge wrapper script, point MCP c
 - Registry-driven — add new MCPs/providers/skills by editing JSON, not code
 - Support users WITHOUT GitHub Copilot subscription
 - Use absolute paths (not ~) in generated configs for Kiro (tilde bug)
+
+## NEXT TASK — Guided Onboarding UX
+
+Replace the flat password prompts in init.ts Step 4 with a guided onboarding flow.
+
+### Requirements
+For each MCP that needs an API key, show a boxed panel with:
+1. Service name and description
+2. Step-by-step instructions (go to URL, create account, copy key)
+3. Input field for the key
+4. Skip option ("Enter key" or "Skip — install without this MCP")
+
+### Setup Instructions per MCP (add to registry/mcps.json as `setupSteps` array)
+- **mem0**: Go to https://app.mem0.ai/ → Sign up free → Settings → API Keys → Create Key → Copy
+- **GitHub**: Go to https://github.com/settings/tokens → Generate new token (classic) → Select scopes: repo, read:org → Copy
+- **Notion**: Go to https://www.notion.so/my-integrations → New integration → Copy Internal Integration Secret
+- **NVIDIA NIM**: Go to https://build.nvidia.com/ → Sign up free → API Key → Generate → Copy
+- **Google AI Studio**: Go to https://aistudio.google.com/apikey → Create API Key → Copy
+
+### Visual Format (use chalk + boxen or manual box drawing)
+```
+╔═══════════════════════════════════════════════════════╗
+║  📦 mem0 — Long-term memory across sessions          ║
+║                                                       ║
+║  1. Go to: https://app.mem0.ai/                       ║
+║  2. Sign up for a free account                        ║
+║  3. Go to Settings → API Keys → Create Key            ║
+║  4. Copy the key and paste below                      ║
+║                                                       ║
+║  API Key: ▌                                           ║
+║                                                       ║
+║  [Enter key]  or  [Skip]                              ║
+╚═══════════════════════════════════════════════════════╝
+```
+
+### End Summary
+After all MCPs are prompted, show:
+```
+  Configured:
+    ✅ mem0 (API key saved)
+    ✅ GitHub (token saved)
+    ⏭️  Notion (skipped)
+    ✅ NVIDIA NIM (API key saved)
+    ⏭️  Google AI Studio (skipped)
+
+  Skipped MCPs can be added later with: f2g-telco init --reconfigure
+```
+
+### Also add `--reconfigure` flag
+Add to the init command options so users can re-run just the API key collection step.
+
+### Implementation Notes
+- Use inquirer prompts with chalk formatting for the boxes
+- Add `setupSteps` array to each MCP entry in registry/mcps.json
+- Keep it simple — no external deps like boxen, just chalk + manual box chars
+- The skip option should remove that MCP from the install list
