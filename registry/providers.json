@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0",
+  "version": "1.1.0",
   "providers": [
     {
       "id": "copilot",
@@ -8,27 +8,31 @@
       "free": false,
       "setup": "Run: crush login copilot",
       "models": {
-        "large": "copilot/claude-opus-4.6",
-        "small": "copilot/claude-haiku-4.5",
-        "reasoning": "copilot/claude-opus-4.6"
+        "large": { "model": "claude-opus-4.6", "provider": "copilot" },
+        "small": { "model": "claude-haiku-4.5", "provider": "copilot" }
       },
       "tools": ["crush", "kiro"]
     },
     {
       "id": "ollama",
       "name": "Ollama (Local)",
-      "description": "Run models locally — free, private, no API keys",
+      "description": "Run models locally — free, private, no API keys needed",
       "free": true,
       "setup": "Install from https://ollama.ai then: ollama pull qwen3:8b",
       "models": {
-        "large": "ollama/qwen3:32b",
-        "small": "ollama/qwen3:8b",
-        "reasoning": "ollama/qwen3:32b"
+        "large": { "model": "qwen3:32b", "provider": "ollama" },
+        "small": { "model": "qwen3:8b", "provider": "ollama" }
       },
-      "providerConfig": {
-        "type": "openai",
-        "baseUrl": "http://localhost:11434/v1",
-        "apiKey": "ollama"
+      "crushProvider": {
+        "ollama": {
+          "type": "openai-compat",
+          "base_url": "http://localhost:11434/v1",
+          "api_key": "ollama",
+          "models": [
+            { "id": "qwen3:32b", "name": "Qwen3 32B" },
+            { "id": "qwen3:8b", "name": "Qwen3 8B" }
+          ]
+        }
       },
       "tools": ["crush"]
     },
@@ -37,35 +41,67 @@
       "name": "NVIDIA NIM",
       "description": "NVIDIA hosted models — free tier with 1000 credits",
       "free": true,
-      "setup": "Get API key at https://build.nvidia.com/",
+      "setup": "Get free API key at https://build.nvidia.com/",
       "requiresEnv": ["NVIDIA_API_KEY"],
       "models": {
-        "large": "nvidia/llama-3.3-70b-instruct",
-        "small": "nvidia/llama-3.3-70b-instruct",
-        "reasoning": "nvidia/deepseek-ai/deepseek-r1"
+        "large": { "model": "nvidia/llama-3.3-70b-instruct", "provider": "nvidia" },
+        "small": { "model": "nvidia/llama-3.3-70b-instruct", "provider": "nvidia" }
       },
-      "providerConfig": {
-        "type": "openai",
-        "baseUrl": "https://integrate.api.nvidia.com/v1",
-        "envKey": "NVIDIA_API_KEY"
+      "crushProvider": {
+        "nvidia": {
+          "type": "openai-compat",
+          "base_url": "https://integrate.api.nvidia.com/v1",
+          "api_key": "env:NVIDIA_API_KEY",
+          "models": [
+            { "id": "nvidia/llama-3.3-70b-instruct", "name": "Llama 3.3 70B" },
+            { "id": "deepseek-ai/deepseek-r1", "name": "DeepSeek R1" },
+            { "id": "moonshotai/kimi-k2.5", "name": "Kimi K2.5" }
+          ]
+        }
+      },
+      "tools": ["crush"]
+    },
+    {
+      "id": "google-ai",
+      "name": "Google AI Studio",
+      "description": "Gemini models via Google AI Studio — free tier available",
+      "free": true,
+      "setup": "Get free API key at https://aistudio.google.com/apikey",
+      "requiresEnv": ["GOOGLE_AI_API_KEY"],
+      "models": {
+        "large": { "model": "gemini-2.5-pro", "provider": "google-ai" },
+        "small": { "model": "gemini-2.5-flash", "provider": "google-ai" }
+      },
+      "crushProvider": {
+        "google-ai": {
+          "type": "openai-compat",
+          "base_url": "https://generativelanguage.googleapis.com/v1beta/openai",
+          "api_key": "env:GOOGLE_AI_API_KEY",
+          "models": [
+            { "id": "gemini-2.5-pro", "name": "Gemini 2.5 Pro" },
+            { "id": "gemini-2.5-flash", "name": "Gemini 2.5 Flash" }
+          ]
+        }
       },
       "tools": ["crush"]
     },
     {
       "id": "openai-compat",
       "name": "OpenAI-Compatible",
-      "description": "Any OpenAI-compatible API endpoint",
+      "description": "Any OpenAI-compatible API endpoint (LM Studio, vLLM, etc.)",
       "free": null,
       "setup": "Provide your base URL and API key",
-      "requiresEnv": ["CUSTOM_API_KEY"],
+      "requiresEnv": ["CUSTOM_API_KEY", "CUSTOM_BASE_URL"],
       "models": {
-        "large": "custom/default",
-        "small": "custom/default"
+        "large": { "model": "PROMPT_USER", "provider": "custom" },
+        "small": { "model": "PROMPT_USER", "provider": "custom" }
       },
-      "providerConfig": {
-        "type": "openai",
-        "baseUrl": "PROMPT_USER",
-        "envKey": "CUSTOM_API_KEY"
+      "crushProvider": {
+        "custom": {
+          "type": "openai-compat",
+          "base_url": "PROMPT_USER",
+          "api_key": "env:CUSTOM_API_KEY"
+        }
       },
       "tools": ["crush"]
     }

@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0",
+  "version": "1.1.0",
   "mcps": [
     {
       "id": "mem0",
@@ -10,7 +10,8 @@
       "requiresEnv": ["MEM0_API_KEY"],
       "envSetup": "Get free API key at https://app.mem0.ai/",
       "category": "memory",
-      "free": true
+      "free": true,
+      "autoApprove": ["add_memory", "search_memories", "get_memories"]
     },
     {
       "id": "context7",
@@ -20,7 +21,8 @@
       "command": "context7-mcp",
       "requiresEnv": [],
       "category": "knowledge",
-      "free": true
+      "free": true,
+      "autoApprove": ["resolve-library-id", "query-docs"]
     },
     {
       "id": "sequential-thinking",
@@ -30,7 +32,8 @@
       "command": "mcp-server-sequential-thinking",
       "requiresEnv": [],
       "category": "reasoning",
-      "free": true
+      "free": true,
+      "autoApprove": ["sequentialthinking"]
     },
     {
       "id": "memory",
@@ -40,7 +43,8 @@
       "command": "mcp-server-memory",
       "requiresEnv": [],
       "category": "memory",
-      "free": true
+      "free": true,
+      "autoApprove": ["create_entities", "search_nodes", "read_graph", "add_observations", "open_nodes", "create_relations"]
     },
     {
       "id": "filesystem",
@@ -50,7 +54,8 @@
       "command": "mcp-server-filesystem",
       "requiresEnv": [],
       "category": "core",
-      "free": true
+      "free": true,
+      "autoApprove": ["read_file", "list_directory"]
     },
     {
       "id": "fetch",
@@ -60,7 +65,8 @@
       "command": "mcp-server-fetch",
       "requiresEnv": [],
       "category": "core",
-      "free": true
+      "free": true,
+      "autoApprove": ["fetch"]
     },
     {
       "id": "github",
@@ -71,7 +77,8 @@
       "requiresEnv": ["GITHUB_PERSONAL_ACCESS_TOKEN"],
       "envSetup": "Create at https://github.com/settings/tokens",
       "category": "dev",
-      "free": true
+      "free": true,
+      "autoApprove": []
     },
     {
       "id": "playwright",
@@ -81,7 +88,32 @@
       "command": "playwright-mcp",
       "requiresEnv": [],
       "category": "testing",
-      "free": true
+      "free": true,
+      "autoApprove": []
+    },
+    {
+      "id": "postgresql",
+      "name": "postgresql",
+      "description": "Database queries — PostgreSQL",
+      "install": "npm install -g mcp-server-postgres",
+      "command": "mcp-server-postgres",
+      "requiresEnv": [],
+      "category": "dev",
+      "free": true,
+      "autoApprove": []
+    },
+    {
+      "id": "notion",
+      "name": "notion",
+      "description": "Read/write Notion pages and databases",
+      "install": "npm install -g notion-mcp-server",
+      "command": "npx",
+      "args": ["-y", "notion-mcp-server"],
+      "requiresEnv": ["NOTION_TOKEN"],
+      "envSetup": "Create integration at https://www.notion.so/my-integrations",
+      "category": "productivity",
+      "free": true,
+      "autoApprove": []
     },
     {
       "id": "mermaid",
@@ -90,9 +122,10 @@
       "install": "npm install -g mermaid-mcp-server",
       "command": "mermaid-mcp-server",
       "requiresEnv": [],
-      "env": {"CONTENT_IMAGE_SUPPORTED": "false"},
+      "env": { "CONTENT_IMAGE_SUPPORTED": "false" },
       "category": "docs",
-      "free": true
+      "free": true,
+      "autoApprove": []
     },
     {
       "id": "gitnexus",
@@ -103,18 +136,21 @@
       "args": ["gitnexus", "mcp"],
       "requiresEnv": [],
       "category": "dev",
-      "free": true
+      "free": true,
+      "autoApprove": ["query", "context", "impact"]
     },
     {
       "id": "contextgraph",
       "name": "contextgraph",
-      "description": "Governed shared memory — provenance, entity extraction, trust scoring",
+      "description": "Governed shared memory — provenance, entity extraction, trust scoring. Auto-hydrates from mem0.",
       "install": "pip install contextgraph[server,mcp]",
       "command": "contextgraph-mcp",
       "requiresEnv": [],
       "category": "memory",
       "free": true,
-      "python": true
+      "python": true,
+      "bridge": true,
+      "autoApprove": ["contextgraph_store", "contextgraph_recall", "contextgraph_relate", "contextgraph_watch", "contextgraph_notifications", "contextgraph_review"]
     }
   ]
 }

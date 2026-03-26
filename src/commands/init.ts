@@ -6,12 +6,12 @@ import os from 'os';
 import { detectEnvironment } from '../utils/detect.js';
 import { log } from '../utils/logger.js';
 import { saveConfig, getToolPaths, type F2GConfig } from '../utils/config.js';
-import { installMcps } from '../installers/mcps.js';
+import { installMcps, writeToolConfig } from '../installers/mcps.js';
 import { installSkills } from '../installers/skills.js';
 
-// Load registry from package
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
 const registryDir = path.resolve(__dirname, '..', '..', 'registry');
+const templatesDir = path.resolve(__dirname, '..', '..', 'templates');
 
 interface InitOptions {
   provider?: string;
@@ -27,150 +27,159 @@ export async function initCommand(options: InitOptions) {
   ╚═══════════════════════════════════════╝
   `));
 
-  // Step 1: Detect environment
-  log.header('Detecting environment...');
+  // Step 1: Detect
+  log.header('Step 1 — Detecting environment');
   const env = await detectEnvironment();
-
   log.info(`OS: ${env.os}`);
-  log.info(`Node: ${env.node || chalk.red('not found')}`);
-  log.info(`Python: ${env.python || chalk.dim('not found')}`);
-  log.info(`Git: ${env.git || chalk.red('not found')}`);
+  log.info(`Node: ${env.node || chalk.red('not found — required')}`);
+  log.info(`Python: ${env.python || chalk.dim('not found — some MCPs need it')}`);
+  log.info(`Git: ${env.git || chalk.red('not found — required')}`);
 
-  const detectedTools: string[] = [];
-  if (env.tools.crush) detectedTools.push('crush');
-  if (env.tools.kiro) detectedTools.push('kiro');
-  if (env.tools.claudeCode) detectedTools.push('claude-code');
-
-  if (detectedTools.length > 0) {
-    log.success(`Detected tools: ${detectedTools.join(', ')}`);
-  } else {
-    log.warn('No AI coding tools detected. Install Crush or Kiro first.');
+  if (!env.node || !env.git) {
+    log.error('Node.js and Git are required. Install them first.');
+    process.exit(1);
   }
+
+  const detected: string[] = [];
+  if (env.tools.crush) detected.push('Crush');
+  if (env.tools.kiro) detected.push('Kiro');
+  if (detected.length > 0) log.success(`Tools: ${detected.join(', ')}`);
 
   const detectedProviders: string[] = [];
-  if (env.providers.copilot) detectedProviders.push('copilot');
-  if (env.providers.ollama) detectedProviders.push('ollama');
-  if (env.providers.nim) detectedProviders.push('nim');
-
-  if (detectedProviders.length > 0) {
-    log.success(`Detected providers: ${detectedProviders.join(', ')}`);
-  }
+  if (env.providers.copilot) detectedProviders.push('Copilot');
+  if (env.providers.ollama) detectedProviders.push('Ollama');
+  if (env.providers.nim) detectedProviders.push('NIM');
+  if (detectedProviders.length > 0) log.success(`Providers: ${detectedProviders.join(', ')}`);
 
   // Step 2: Choose tool
+  log.header('Step 2 — Choose your AI coding tool');
   let tool = options.tool;
   if (!tool) {
-    const toolChoices = [
-      ...(env.tools.crush ? [{ name: 'Crush (detected)', value: 'crush' }] : []),
-      ...(env.tools.kiro ? [{ name: 'Kiro CLI (detected)', value: 'kiro' }] : []),
-      ...(!env.tools.crush ? [{ name: 'Crush (not installed)', value: 'crush' }] : []),
-      ...(!env.tools.kiro ? [{ name: 'Kiro CLI (not installed)', value: 'kiro' }] : []),
-    ];
     const { selectedTool } = await inquirer.prompt([{
       type: 'list',
       name: 'selectedTool',
-      message: 'Which AI coding tool do you want to configure?',
-      choices: toolChoices,
+      message: 'Which tool do you want to configure?',
+      choices: [
+        { name: `Crush${env.tools.crush ? chalk.green(' (detected)') : ''}`, value: 'crush' },
+        { name: `Kiro CLI${env.tools.kiro ? chalk.green(' (detected)') : ''}`, value: 'kiro' },
+      ],
     }]);
     tool = selectedTool;
   }
 
   // Step 3: Choose provider
+  log.header('Step 3 — Choose your AI provider');
   const providers = await fs.readJson(path.join(registryDir, 'providers.json'));
   let provider = options.provider;
   if (!provider) {
-    const providerChoices = providers.providers
+    const choices = providers.providers
       .filter((p: { tools: string[] }) => p.tools.includes(tool!))
       .map((p: { id: string; name: string; description: string; free: boolean | null }) => ({
-        name: `${p.name}${p.free ? chalk.green(' (free)') : p.free === false ? chalk.yellow(' (subscription)') : ''} — ${p.description}`,
+        name: `${p.name}${p.free === true ? chalk.green(' (free)') : p.free === false ? chalk.yellow(' (subscription)') : ''} — ${p.description}`,
         value: p.id,
       }));
     const { selectedProvider } = await inquirer.prompt([{
       type: 'list',
       name: 'selectedProvider',
       message: 'Which AI provider do you use?',
-      choices: providerChoices,
+      choices,
     }]);
     provider = selectedProvider;
   }
 
-  // Step 4: Collect required env vars
+  const providerConfig = providers.providers.find((p: { id: string }) => p.id === provider);
+
+  // Step 4: Collect API keys
+  log.header('Step 4 — API Keys');
   const envVars: Record<string, string> = {};
   const mcpRegistry = await fs.readJson(path.join(registryDir, 'mcps.json'));
 
-  // Collect env vars for MCPs that need them
-  const allRequiredEnvs = new Set<string>();
+  // Gather all required env vars
+  const allEnvs = new Map<string, { neededBy: string[]; setup?: string }>();
   for (const mcp of mcpRegistry.mcps) {
-    for (const envKey of mcp.requiresEnv) {
-      if (!process.env[envKey]) allRequiredEnvs.add(envKey);
+    for (const key of mcp.requiresEnv) {
+      if (!process.env[key]) {
+        const entry = allEnvs.get(key) || { neededBy: [], setup: mcp.envSetup };
+        entry.neededBy.push(mcp.name);
+        allEnvs.set(key, entry);
+      }
     }
   }
-
-  // Collect provider env vars
-  const providerConfig = providers.providers.find((p: { id: string }) => p.id === provider);
   if (providerConfig?.requiresEnv) {
-    for (const envKey of providerConfig.requiresEnv) {
-      if (!process.env[envKey]) allRequiredEnvs.add(envKey);
+    for (const key of providerConfig.requiresEnv) {
+      if (!process.env[key] && !allEnvs.has(key)) {
+        allEnvs.set(key, { neededBy: [providerConfig.name], setup: providerConfig.setup });
+      }
     }
   }
 
-  if (allRequiredEnvs.size > 0 && !options.yes) {
-    log.header('API Keys & Tokens');
+  if (allEnvs.size > 0 && !options.yes) {
     log.dim('Leave blank to skip MCPs that require this key.\n');
-
-    for (const envKey of allRequiredEnvs) {
-      // Find which MCP needs this
-      const neededBy = mcpRegistry.mcps
-        .filter((m: { requiresEnv: string[] }) => m.requiresEnv.includes(envKey))
-        .map((m: { name: string }) => m.name);
-      const setupHint = mcpRegistry.mcps
-        .find((m: { requiresEnv: string[]; envSetup?: string }) =>
-          m.requiresEnv.includes(envKey) && m.envSetup)?.envSetup || '';
-
+    for (const [key, info] of allEnvs) {
+      const hint = info.setup ? chalk.dim(` (${info.setup})`) : '';
       const { value } = await inquirer.prompt([{
         type: 'password',
         name: 'value',
-        message: `${envKey}${neededBy.length ? ` (for ${neededBy.join(', ')})` : ''}:`,
-        ...(setupHint ? { suffix: chalk.dim(` ${setupHint}`) } : {}),
+        message: `${key} — for ${info.neededBy.join(', ')}${hint}:`,
       }]);
-      if (value) envVars[envKey] = value;
+      if (value) envVars[key] = value;
     }
   }
 
-  // Step 5: Select MCPs
-  log.header('Installing MCP Servers...');
-  const mcpsToInstall = mcpRegistry.mcps.filter((mcp: { requiresEnv: string[] }) => {
-    // Skip MCPs whose required env vars weren't provided
-    return mcp.requiresEnv.every(
-      (key: string) => envVars[key] || process.env[key]
-    );
-  });
+  // Step 5: Install MCPs
+  log.header('Step 5 — Installing MCP servers');
+  const mcpsToInstall = mcpRegistry.mcps.filter((mcp: { requiresEnv: string[] }) =>
+    mcp.requiresEnv.every((key: string) => envVars[key] || process.env[key])
+  );
+  const installedIds = await installMcps(mcpsToInstall, tool!, envVars);
 
-  const installedMcps = await installMcps(mcpsToInstall, tool!, envVars);
+  // Step 6: Write complete tool config
+  log.header('Step 6 — Writing tool configuration');
+  await writeToolConfig(mcpRegistry.mcps, installedIds, tool!, envVars, providerConfig);
 
-  // Step 6: Install skills
-  log.header('Installing Skills...');
-  const skillsRegistry = await fs.readJson(path.join(registryDir, 'skills.json'));
+  // Step 7: Install orchestrator
+  log.header('Step 7 — Setting up orchestrator agent');
   const toolPaths = getToolPaths(tool!);
+  const home = os.homedir();
+
+  if (tool === 'crush') {
+    const agentsDir = path.join(home, '.config', 'crush', 'agents');
+    await fs.ensureDir(agentsDir);
+    const tpl = await fs.readFile(path.join(templatesDir, 'crush', 'autonomous.md'), 'utf-8');
+    await fs.writeFile(path.join(agentsDir, 'autonomous.md'), tpl);
+    log.success('Orchestrator agent written to ~/.config/crush/agents/autonomous.md');
+  } else if (tool === 'kiro') {
+    const tpl = await fs.readFile(path.join(templatesDir, 'kiro', 'orchestrator.md'), 'utf-8');
+    const content = tpl.replace(/USER/g, path.basename(home));
+    const settingsDir = path.join(home, '.kiro', 'settings');
+    await fs.ensureDir(settingsDir);
+    await fs.writeFile(path.join(settingsDir, 'orchestrator.md'), content);
+    log.success('Orchestrator written to ~/.kiro/settings/orchestrator.md');
+  }
+
+  // Step 8: Install skills
+  log.header('Step 8 — Installing skills');
+  const skillsRegistry = await fs.readJson(path.join(registryDir, 'skills.json'));
   await fs.ensureDir(toolPaths.skills);
   const skillCount = await installSkills(skillsRegistry.sources, toolPaths.skills);
-  log.success(`${skillCount} skills symlinked into ${toolPaths.skills}`);
+  log.success(`${skillCount} skills symlinked`);
 
-  // Step 7: Generate INVENTORY.md
-  log.header('Generating INVENTORY.md...');
-  const inventoryPath = path.join(os.homedir(), '.agents', 'INVENTORY.md');
+  // Step 9: Generate INVENTORY.md
+  log.header('Step 9 — Generating INVENTORY.md');
+  const inventoryPath = path.join(home, '.agents', 'INVENTORY.md');
   await fs.ensureDir(path.dirname(inventoryPath));
-  await generateInventory(inventoryPath, installedMcps, mcpRegistry.mcps, tool!);
-  log.success(`INVENTORY.md written to ${inventoryPath}`);
+  await generateInventory(inventoryPath, installedIds, mcpRegistry.mcps, tool!);
+  log.success(`INVENTORY.md → ${inventoryPath}`);
 
-  // Step 8: Save config
+  // Step 10: Save config
   const config: F2GConfig = {
     version: '0.1.0',
     provider: provider!,
     tool: tool!,
-    installedMcps,
+    installedMcps: installedIds,
     installedSkills: [],
     paths: {
-      home: os.homedir(),
+      home,
       config: toolPaths.config,
       skills: toolPaths.skills,
       agents: toolPaths.agents || '',
@@ -179,14 +188,15 @@ export async function initCommand(options: InitOptions) {
   };
   await saveConfig(config);
 
-  // Done
   console.log(chalk.bold.green(`
   ✔ F2G-Telco setup complete!
 
-  Tool:     ${tool}
-  Provider: ${provider}
-  MCPs:     ${installedMcps.length} installed
-  Skills:   ${skillCount} symlinked
+  Tool:        ${tool}
+  Provider:    ${providerConfig.name}
+  MCPs:        ${installedIds.length} installed
+  Skills:      ${skillCount} symlinked
+  Orchestrator: ✔
+  Permissions: ${tool === 'crush' ? '38+ tools auto-approved' : 'configured'}
 
   Next steps:
     f2g-telco doctor    Check everything is working
@@ -201,36 +211,31 @@ async function generateInventory(
   allMcps: Array<{ id: string; name: string; description: string }>,
   tool: string,
 ): Promise<void> {
-  const mcpRows = allMcps
+  const rows = allMcps
     .filter(m => installedIds.includes(m.id))
     .map(m => `| ${m.name} | ${m.description} |`)
     .join('\n');
 
-  const content = `# AI Environment Inventory
+  await fs.writeFile(filePath, `# AI Environment Inventory
 > Generated by F2G-Telco v0.1.0. Agents: read this to know what's available.
 
 ## MCP Servers (active)
 | Server | Purpose |
 |--------|---------|
-${mcpRows}
+${rows}
 
 ## Skills Discovery
 Skills are in the tool's skills directory. Each has a SKILL.md with a \`description\` field.
 Match task to skill by reading descriptions. Do NOT preload all skills.
 
 ## Key Rules
-- **gitnexus**: Run \`npx gitnexus analyze\` in a repo before querying (one-time per repo)
+- **gitnexus**: Run \`npx gitnexus analyze\` in a repo before querying
 - **context7**: Use for up-to-date library documentation
 - **sequential-thinking**: Use for complex multi-step reasoning
-
-## Documentation Standard
-- **Output format**: Word (.docx) via python-docx — NOT markdown
-- **Diagrams**: Render mermaid code to PNG via mermaid MCP or mermaid.ink, embed inline
-- Markdown is acceptable only for: README.md, AGENT_MEMORY.md, CHANGELOG.md (repo-level files)
+- **mem0**: Check for prior context before starting work
+- **contextgraph**: Use for structured recall with entity relationships
 
 ---
-*Tool: ${tool} | Generated: ${new Date().toISOString().split('T')[0]}*
-`;
-
-  await fs.writeFile(filePath, content);
+*Tool: ${tool} | Generated: ${new Date().toISOString().split('T')[0]} | F2G-Telco v0.1.0*
+`);
 }
