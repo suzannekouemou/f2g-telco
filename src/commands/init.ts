@@ -8,6 +8,7 @@ import { detectEnvironment } from '../utils/detect.js';
 import { log, isVerbose } from '../utils/logger.js';
 import { saveConfig, loadConfig, getToolPaths, type F2GConfig } from '../utils/config.js';
 import { installMcps, writeToolConfig } from '../installers/mcps.js';
+import { getLogPath } from '../utils/fileLogger.js';
 import { installSkills } from '../installers/skills.js';
 
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
@@ -454,6 +455,8 @@ async function runInit(options: InitOptions) {
 
   Next steps:
     f2g-telco doctor    Check everything is working
+
+  Log file: \${getLogPath()}
     f2g-telco list      See what's installed
     f2g-telco update    Pull latest configs
   `));

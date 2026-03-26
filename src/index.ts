@@ -6,6 +6,7 @@ import { doctorCommand } from './commands/doctor.js';
 import { listCommand } from './commands/list.js';
 import { updateCommand } from './commands/update.js';
 import { statusCommand } from './commands/status.js';
+import { logSystemInfo, getLogPath } from './utils/fileLogger.js';
 import { addCommand } from './commands/add.js';
 import { removeCommand } from './commands/remove.js';
 import { setVerbose, log } from './utils/logger.js';
@@ -83,4 +84,5 @@ program
   .description('Show current configuration at a glance')
   .action(statusCommand);
 
-program.parse();
+// Log system info on every invocation
+logSystemInfo().then(() => program.parse());
