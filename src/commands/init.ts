@@ -99,7 +99,7 @@ export async function initCommand(options: InitOptions) {
   for (const mcp of mcpRegistry.mcps) {
     for (const key of mcp.requiresEnv) {
       if (!process.env[key]) {
-        const entry = allEnvs.get(key) || { neededBy: [], setup: mcp.envSetup };
+        const entry = allEnvs.get(key) || { neededBy: [] as string[], setup: mcp.envSetup };
         entry.neededBy.push(mcp.name);
         allEnvs.set(key, entry);
       }
