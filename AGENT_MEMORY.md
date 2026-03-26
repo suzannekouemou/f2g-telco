@@ -259,3 +259,25 @@ Add to the init command options so users can re-run just the API key collection 
 - Add `setupSteps` array to each MCP entry in registry/mcps.json
 - Keep it simple — no external deps like boxen, just chalk + manual box chars
 - The skip option should remove that MCP from the install list
+
+## QUEUED TASK — Fix MCP Install Permissions
+
+### Problem
+`npm install -g` fails on Linux/WSL without sudo due to EACCES on `/usr/lib/node_modules/`.
+
+### Solution: npx + user prefix
+1. **Install step**: Use `npm install --prefix ~/.local <package>` instead of `npm install -g`
+2. **MCP config command**: Use `npx -y <package>` as the command (works even if install failed)
+3. **Fallback**: If the global binary already exists, use it directly
+
+### Changes needed
+- `registry/mcps.json`: Add `npxCommand` field to each MCP entry (e.g. `["npx", "-y", "mem0-mcp-server"]`)
+- `src/installers/mcps.ts`: Change install command to use `--prefix ~/.local`, update config writer to use npx commands
+- Both Crush and Kiro config writers need to output npx-style commands:
+  - Crush: `"command": ["npx", "-y", "mem0-mcp-server"]`
+  - Kiro: `"command": "npx", "args": ["-y", "mem0-mcp-server"]`
+- Python MCPs (contextgraph): Use `pip3 install --user` (already done)
+- Add `~/.local/bin` to PATH check in doctor command
+
+### Priority
+High — without this, first-time users on Linux/WSL will get permission errors on every MCP install.
