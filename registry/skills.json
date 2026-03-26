@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0",
+  "version": "1.1.0",
   "sources": [
     {
       "id": "awesome-copilot",
@@ -19,6 +19,36 @@
       "name": "Agency Agents",
       "repo": "msitarzewski/agency-agents",
       "description": "55 agent personas across engineering, testing, design, strategy",
+      "license": "MIT",
+      "install": "clone"
+    },
+    {
+      "id": "claude-best-practices",
+      "name": "Claude Best Practices",
+      "repo": "anthropics/courses",
+      "description": "Official Anthropic best practices for Claude — prompt engineering, tool use",
+      "license": "MIT",
+      "install": "sparse-clone",
+      "picks": {
+        "prompts": ["prompt_engineering_interactive_tutorial", "tool_use"]
+      }
+    },
+    {
+      "id": "presentation-assets",
+      "name": "Presentation Assets",
+      "repo": "slidevjs/slidev",
+      "description": "Presentation framework for developers — markdown-based slides",
+      "license": "MIT",
+      "install": "sparse-clone",
+      "picks": {
+        "themes": ["packages/slidev", "packages/client"]
+      }
+    },
+    {
+      "id": "gsd-agents",
+      "name": "GSD Subagents",
+      "repo": "openagents-control/gsd-agents",
+      "description": "Get Stuff Done agents — planner, executor, verifier, debugger",
       "license": "MIT",
       "install": "clone"
     }
