@@ -1,7 +1,7 @@
 {
   "name": "f2g-telco",
   "version": "0.1.0",
-  "description": "CLI tool to supercharge AI coding environments — installs MCPs, skills, agents, and memory pipelines",
+  "description": "CLI tool to supercharge AI coding environments \u2014 installs MCPs, skills, agents, and memory pipelines",
   "type": "module",
   "bin": {
     "f2g-telco": "./dist/index.js"
@@ -11,9 +11,22 @@
     "dev": "tsx src/index.ts",
     "start": "node dist/index.js",
     "lint": "eslint src/",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "test": "node --test tests/*.test.js",
+    "test:build": "npm run build && npm test"
   },
-  "keywords": ["ai", "mcp", "cli", "copilot", "ollama", "nvidia-nim", "crush", "kiro", "agents", "skills"],
+  "keywords": [
+    "ai",
+    "mcp",
+    "cli",
+    "copilot",
+    "ollama",
+    "nvidia-nim",
+    "crush",
+    "kiro",
+    "agents",
+    "skills"
+  ],
   "author": "suzannekouemou",
   "license": "MIT",
   "repository": {
@@ -38,5 +51,11 @@
   "engines": {
     "node": ">=18.0.0"
   },
-  "files": ["dist/", "registry/", "templates/", "README.md", "LICENSE"]
+  "files": [
+    "dist/",
+    "registry/",
+    "templates/",
+    "README.md",
+    "LICENSE"
+  ]
 }
