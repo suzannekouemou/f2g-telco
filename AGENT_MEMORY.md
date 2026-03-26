@@ -126,11 +126,11 @@ Need to: pip install contextgraph, create the bridge wrapper script, point MCP c
 5. ~~**Add permissions generator**~~ ✅ DONE — builds allowed_tools from installed MCPs
 6. ~~**Add LSP detection**~~ ✅ DONE — auto-detects pyright, typescript-language-server
 7. ~~**Add Google AI Studio**~~ ✅ DONE — 5 providers total
-8. **Fix TypeScript build**: `npm install && npm run build` — Crush should do this
-9. **Add ContextGraph bridge installer**: pip install + wrapper script creation
-10. **Add more skill sources**: claude-best-practices, GSD agents, presentation-assets
-11. **npx support**: Ensure `npx f2g-telco init` works
-12. **E2E test**: Full init → doctor cycle on clean machine
+8. ~~**Fix TypeScript build**~~ ✅ DONE — compiles clean
+9. ~~**Add ContextGraph bridge installer**~~ ✅ DONE — pip install + wrapper script in init flow
+10. ~~**Add more skill sources**~~ ✅ DONE — claude-best-practices, GSD agents, presentation-assets (5 sources)
+11. ~~**npx support**~~ ✅ DONE — bin entry + shebang verified
+12. ~~**E2E test**~~ ✅ DONE — build → init → doctor cycle works
 
 ## Provider Config Formats
 
