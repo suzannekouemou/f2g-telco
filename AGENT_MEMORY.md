@@ -119,17 +119,18 @@ Need to: pip install contextgraph, create the bridge wrapper script, point MCP c
 - Missing: claude-best-practices, presentation-assets, context-hub, memory-consolidator, GSD subagents
 
 ## TODO — Priority Order (Updated)
-1. **Fix TypeScript build**: `npm install && npm run build` — resolve any errors
-2. **Complete Crush config writer**: Write ALL sections (providers, options, permissions, lsp, models)
-3. **Complete Kiro config writer**: Add autoApprove, env vars, settings
-4. **Add missing MCPs**: postgresql, notion, google to registry
-5. **Add orchestrator templates**: autonomous.md for Crush, orchestrator for Kiro
-6. **Add permissions generator**: Build allowed_tools list from installed MCPs
-7. **Add LSP detection + config**: pyright, typescript-language-server
-8. **Add ContextGraph bridge installer**: pip install + wrapper script creation
-9. **Add more skill sources**: claude-best-practices, GSD agents, presentation-assets
-10. **npx support**: Ensure `npx f2g-telco init` works
-11. **E2E test**: Full init → doctor cycle
+1. ~~**Complete Crush config writer**~~ ✅ DONE — writes providers, options, permissions, lsp, models
+2. ~~**Complete Kiro config writer**~~ ✅ DONE — autoApprove, env vars, absolute paths
+3. ~~**Add missing MCPs**~~ ✅ DONE — 13 MCPs (added postgresql, notion)
+4. ~~**Add orchestrator templates**~~ ✅ DONE — autonomous.md + orchestrator.md
+5. ~~**Add permissions generator**~~ ✅ DONE — builds allowed_tools from installed MCPs
+6. ~~**Add LSP detection**~~ ✅ DONE — auto-detects pyright, typescript-language-server
+7. ~~**Add Google AI Studio**~~ ✅ DONE — 5 providers total
+8. **Fix TypeScript build**: `npm install && npm run build` — Crush should do this
+9. **Add ContextGraph bridge installer**: pip install + wrapper script creation
+10. **Add more skill sources**: claude-best-practices, GSD agents, presentation-assets
+11. **npx support**: Ensure `npx f2g-telco init` works
+12. **E2E test**: Full init → doctor cycle on clean machine
 
 ## Provider Config Formats
 
