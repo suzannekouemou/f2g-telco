@@ -5,6 +5,7 @@ import { initCommand } from './commands/init.js';
 import { doctorCommand } from './commands/doctor.js';
 import { listCommand } from './commands/list.js';
 import { updateCommand } from './commands/update.js';
+import { addCommand } from './commands/add.js';
 import { setVerbose, log } from './utils/logger.js';
 
 // Handle Ctrl+C gracefully
@@ -64,5 +65,10 @@ program
   .command('update')
   .description('Pull latest configs and skills from the F2G-Telco registry')
   .action(updateCommand);
+
+program
+  .command('add <mcp>')
+  .description('Install a single MCP by id (e.g., f2g-telco add mem0)')
+  .action(addCommand);
 
 program.parse();
