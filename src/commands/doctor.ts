@@ -12,12 +12,13 @@ export async function doctorCommand() {
 
   const config = await loadConfig();
   if (!config) {
-    log.error('No F2G-Telco config found. Run: f2g-telco init');
+    log.error('No F2G-Telco config found. Run: npx f2g-telco init');
     return;
   }
 
   const env = await detectEnvironment();
   let pass = 0;
+  let warn = 0;
   let fail = 0;
 
   const check = (name: string, ok: boolean, detail?: string) => {
@@ -30,82 +31,70 @@ export async function doctorCommand() {
     }
   };
 
+  const advisory = (name: string, ok: boolean, detail?: string) => {
+    if (ok) {
+      console.log(chalk.green('  ✔'), name, detail ? chalk.dim(detail) : '');
+      pass++;
+    } else {
+      console.log(chalk.yellow('  ⚠'), name, detail ? chalk.dim(detail) : '');
+      warn++;
+    }
+  };
+
   // Prerequisites
   log.header('Prerequisites');
-  check('Node.js', !!env.node, env.node || 'not found');
-  check('Git', !!env.git, env.git || 'not found');
-  check('Python', !!env.python, env.python || 'optional');
-
-  // Check ~/.local/bin in PATH (required for user-prefix npm installs)
-  const home = os.homedir();
-  const localBin = path.join(home, '.local', 'bin');
-  const pathEnv = process.env.PATH || '';
-  const localBinInPath = pathEnv.split(':').some(p => p === localBin || p === `${home}/.local/bin`);
-  check('~/.local/bin in PATH', localBinInPath, localBinInPath ? localBin : 'add to PATH for npm --prefix installs');
+  check('Node.js', !!env.node, env.node || 'not found — required');
+  check('Git', !!env.git, env.git || 'not found — required for skill cloning');
+  advisory('Python', !!env.python, env.python || 'optional — needed only for contextgraph MCP');
 
   // Tool
   log.header(`Tool: ${config.tool}`);
   const toolInstalled = config.tool === 'crush' ? env.tools.crush : env.tools.kiro;
   if (toolInstalled) {
-    check(`${config.tool} installed`, true);
+    check(`${config.tool} binary`, true, 'found in PATH');
   } else {
-    check(`${config.tool} installed`, false, config.tool === 'crush'
-      ? 'Install: go install github.com/charmbracelet/crush@latest'
-      : 'Install: npm install -g @anthropic-ai/kiro');
+    advisory(`${config.tool} binary`, false,
+      config.tool === 'crush'
+        ? 'not in PATH — install: go install github.com/charmbracelet/crush@latest'
+        : 'not in PATH — install: npm i -g @anthropic-ai/kiro');
   }
 
   const paths = getToolPaths(config.tool);
-  check('Config directory exists', await fs.pathExists(paths.config), paths.config);
-  check('MCP config exists', await fs.pathExists(paths.mcpConfig), paths.mcpConfig);
-  check('Skills directory exists', await fs.pathExists(paths.skills), paths.skills);
+  check('Config directory', await fs.pathExists(paths.config), paths.config);
+  check('MCP config file', await fs.pathExists(paths.mcpConfig), paths.mcpConfig);
+  check('Skills directory', await fs.pathExists(paths.skills), paths.skills);
 
-  // MCPs — check if npx can find them (more reliable than which)
+  // MCPs — all Node MCPs use npx, so they're always "available"
   log.header('MCP Servers');
+  const home = os.homedir();
   for (const mcpId of config.installedMcps) {
-    let found = false;
-    
-    // For contextgraph, check the Python bridge
     if (mcpId === 'contextgraph') {
+      // Python MCP — check the bridge script exists
       const bridgePath = path.join(home, '.local', 'bin', 'contextgraph-mcp');
-      found = await fs.pathExists(bridgePath);
+      const exists = await fs.pathExists(bridgePath);
+      if (exists) {
+        check(mcpId, true, 'bridge script found');
+      } else {
+        advisory(mcpId, false, 'bridge not found — run: npx f2g-telco add contextgraph');
+      }
     } else {
-      // Check if npx can resolve the package (works even without global install)
-      try {
-        // Try common binary names
-        const binNames = [
-          mcpId,
-          `mcp-server-${mcpId}`,
-          `${mcpId}-mcp`,
-          `${mcpId}-mcp-server`,
-        ];
-        for (const bin of binNames) {
-          try {
-            execSync(`which ${bin} 2>/dev/null`, { encoding: 'utf-8' });
-            found = true;
-            break;
-          } catch { /* continue */ }
-        }
-        // If not found via which, npx will still work
-        if (!found) {
-          // Mark as "found" since npx -y will auto-install
-          found = true;
-        }
-      } catch { /* not found */ }
+      // Node MCPs use npx — always available, just check config entry exists
+      check(mcpId, true, 'configured (npx auto-downloads at runtime)');
     }
-    check(mcpId, found, found ? '' : '(npx will auto-install)');
   }
 
   // INVENTORY.md
   log.header('Discovery');
-  check('INVENTORY.md exists', await fs.pathExists(config.paths.inventory), config.paths.inventory);
+  check('INVENTORY.md', await fs.pathExists(config.paths.inventory), config.paths.inventory);
 
   // Summary
-  console.log(`\n${chalk.bold('Summary:')} ${chalk.green(`${pass} passed`)}, ${fail > 0 ? chalk.red(`${fail} failed`) : chalk.green('0 failed')}\n`);
+  const parts = [chalk.green(`${pass} passed`)];
+  if (warn > 0) parts.push(chalk.yellow(`${warn} warnings`));
+  if (fail > 0) parts.push(chalk.red(`${fail} failed`));
+  console.log(`\n${chalk.bold('Summary:')} ${parts.join(', ')}\n`);
 
-  // Hint if ~/.local/bin not in PATH
-  if (!localBinInPath) {
-    console.log(chalk.yellow('Tip: Add ~/.local/bin to your PATH:'));
-    console.log(chalk.dim('  echo \'export PATH="$HOME/.local/bin:$PATH"\' >> ~/.bashrc && source ~/.bashrc'));
-    console.log('');
+  if (!toolInstalled) {
+    console.log(chalk.yellow(`Note: ${config.tool} binary not found, but config is ready.`));
+    console.log(chalk.dim(`Install ${config.tool} and your environment will work immediately.\n`));
   }
 }
