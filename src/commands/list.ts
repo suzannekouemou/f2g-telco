@@ -35,7 +35,7 @@ export async function listCommand(options: ListOptions) {
     log.header('Providers');
     const registry = await fs.readJson(path.join(registryDir, 'providers.json'));
     for (const p of registry.providers) {
-      const active = config?.provider === p.id;
+      const active = config?.provider?.split(',').map((s: string) => s.trim()).includes(p.id) ?? false;
       const status = active ? chalk.green('✔') : chalk.dim('○');
       const freeTag = p.free ? chalk.green(' free') : p.free === false ? chalk.yellow(' paid') : '';
       console.log(`  ${status} ${chalk.bold(p.name)}${freeTag} — ${p.description}`);
