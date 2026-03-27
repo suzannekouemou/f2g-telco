@@ -40,25 +40,20 @@ export async function installMcps(
 
   for (let i = 0; i < mcps.length; i++) {
     const mcp = mcps[i];
-    const spinner = ora(`[${i + 1}/${mcps.length}] Installing ${mcp.name}...`).start();
+    const spinner = ora(`[${i + 1}/${mcps.length}] Configuring ${mcp.name}...`).start();
     try {
       if (mcp.python) {
-        execSync('pip3 install --user contextgraph[server,mcp] --quiet --break-system-packages 2>/dev/null || pip3 install --user contextgraph[server,mcp] --quiet', { stdio: 'pipe', timeout: 120_000 });
+        // Python MCPs need actual install
+        execSync('pip3 install contextgraph[server,mcp] --quiet --break-system-packages 2>/dev/null || pip3 install contextgraph[server,mcp] --quiet', { stdio: 'pipe', timeout: 120_000 });
+        spinner.succeed(`${mcp.name} installed`);
       } else {
-        const pkg = mcp.install.replace('npm install -g ', '');
-        // Try global first, then user prefix, then skip (npx fallback)
-        try {
-          execSync(`npm install -g ${pkg} 2>/dev/null`, { stdio: 'pipe', timeout: 120_000 });
-        } catch {
-          execSync(`npm install --prefix "${userPrefix}" ${pkg}`, { stdio: 'pipe', timeout: 120_000 });
-        }
+        // Node MCPs: npx handles download at runtime — no install needed
+        spinner.succeed(`${mcp.name} configured (via npx)`);
       }
       installed.push(mcp.id);
-      spinner.succeed(`${mcp.name} installed`);
     } catch {
-      // Install failed, but npx will still work — mark as installed
       installed.push(mcp.id);
-      spinner.warn(`${mcp.name} — npm install failed, will use npx`);
+      spinner.warn(`${mcp.name} — will use npx at runtime`);
     }
   }
 

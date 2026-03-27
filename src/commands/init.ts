@@ -260,7 +260,7 @@ function handleInitError(err: unknown): void {
 }
 
 async function runInit(options: InitOptions) {
-  const version = '0.1.1';
+  const version = '0.1.3';
   console.log('');
   console.log(chalk.cyan.bold('  ███████╗██████╗  ██████╗ '));
   console.log(chalk.cyan.bold('  ██╔════╝╚════██╗██╔════╝ '));
@@ -460,9 +460,9 @@ async function runInit(options: InitOptions) {
   Permissions: ${tool === 'crush' ? '38+ tools auto-approved' : 'configured'}
 
   Next steps:
-    f2g-telco doctor    Check everything is working
-    f2g-telco list      See what's installed
-    f2g-telco update    Pull latest configs
+    npx f2g-telco doctor    Check everything is working
+    npx f2g-telco list      See what's installed
+    npx f2g-telco update    Pull latest configs
 
   Log file: ${getLogPath()}
   `));
