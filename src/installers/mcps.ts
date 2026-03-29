@@ -20,6 +20,8 @@ interface McpEntry {
   free: boolean;
   python?: boolean;
   bridge?: boolean;
+  uvx?: boolean;
+  binary?: boolean;
   autoApprove?: string[];
 }
 
@@ -46,6 +48,12 @@ export async function installMcps(
         // Python MCPs need actual install
         execSync('pip3 install contextgraph[server,mcp] --quiet --break-system-packages 2>/dev/null || pip3 install contextgraph[server,mcp] --quiet', { stdio: 'pipe', timeout: 120_000 });
         spinner.succeed(`${mcp.name} installed`);
+      } else if (mcp.uvx) {
+        // uvx-based MCPs — user needs uvx/pipx installed
+        spinner.succeed(`${mcp.name} configured (via uvx)`);
+      } else if (mcp.binary) {
+        // Standalone binary MCPs — user installs separately
+        spinner.succeed(`${mcp.name} configured (binary required)`);
       } else {
         // Node MCPs: npx handles download at runtime — no install needed
         spinner.succeed(`${mcp.name} configured (via npx)`);
@@ -98,22 +106,23 @@ async function writeCrushConfig(
       if (envVars[key]) env[key] = envVars[key];
     }
 
-    // Use npxCommand if available (preferred for permission-free execution)
-    let command: string[];
+    // Build command (string) + args (string[]) for Crush stdio format
+    let command: string;
+    let args: string[] = [];
     if (mcp.npxCommand) {
-      command = mcp.npxCommand;
+      command = mcp.npxCommand[0];
+      args = mcp.npxCommand.slice(1);
     } else if (mcp.bridge && mcp.id === 'contextgraph') {
-      command = [`${home}/.local/bin/contextgraph-mcp`];
-    } else if (mcp.args) {
-      command = [mcp.command, ...mcp.args];
+      command = `${home}/.local/bin/contextgraph-mcp`;
     } else {
-      command = [mcp.command];
+      command = mcp.command;
+      args = mcp.args || [];
     }
 
     mcpConfig[mcp.id] = {
-      type: 'local',
+      type: 'stdio',
       command,
-      enabled: true,
+      ...(args.length > 0 ? { args } : {}),
       ...(Object.keys(env).length > 0 ? { environment: env } : {}),
     };
   }

@@ -181,6 +181,34 @@
       "python": true,
       "bridge": true,
       "autoApprove": ["contextgraph_store", "contextgraph_recall", "contextgraph_relate", "contextgraph_watch", "contextgraph_notifications", "contextgraph_review"]
+    },
+    {
+      "id": "reddit",
+      "name": "reddit",
+      "description": "Search Reddit, browse subreddits, read posts + comments — no API key",
+      "install": "pipx install reddit-no-auth-mcp-server",
+      "command": "uvx",
+      "npxCommand": ["uvx", "reddit-no-auth-mcp-server"],
+      "args": ["reddit-no-auth-mcp-server"],
+      "requiresEnv": [],
+      "category": "knowledge",
+      "free": true,
+      "uvx": true,
+      "autoApprove": ["reddit_search", "reddit_search_subreddit", "reddit_get_post", "reddit_get_subreddit_posts", "reddit_get_user", "reddit_get_user_posts"]
+    },
+    {
+      "id": "sentrux",
+      "name": "sentrux",
+      "description": "Code quality sensor — scan, health score, rules check, test gaps, git stats. 52 languages",
+      "install": "curl -fsSL https://sentrux.dev/install.sh | sh",
+      "command": "sentrux",
+      "npxCommand": ["sentrux", "--mcp"],
+      "args": ["--mcp"],
+      "requiresEnv": [],
+      "category": "dev",
+      "free": true,
+      "binary": true,
+      "autoApprove": ["scan", "health", "check_rules", "git_stats", "test_gaps"]
     }
   ]
 }

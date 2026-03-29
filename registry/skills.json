@@ -29,6 +29,33 @@
       "description": "16 reference docs — skill/subagent frontmatter, MCP, memory, orchestration workflows",
       "license": "MIT",
       "install": "clone"
+    },
+    {
+      "id": "superpowers",
+      "name": "Superpowers",
+      "description": "Complete dev workflow — brainstorming, TDD, subagent-driven development, code review, git worktrees",
+      "repo": "https://github.com/obra/superpowers.git",
+      "path": "skills",
+      "license": "MIT",
+      "picks": null
+    },
+    {
+      "id": "taste-skill",
+      "name": "Taste Skill",
+      "description": "7 premium frontend design skills — typography, spacing, animations, layout",
+      "repo": "https://github.com/Leonxlnx/taste-skill.git",
+      "path": "skills",
+      "license": "MIT",
+      "picks": null
+    },
+    {
+      "id": "prompt-master",
+      "name": "Prompt Master",
+      "description": "Writes better prompts for any AI tool — extracts 9 dimensions of intent",
+      "repo": "https://github.com/nidhinjs/prompt-master.git",
+      "path": ".",
+      "license": "MIT",
+      "picks": null
     }
   ]
 }
