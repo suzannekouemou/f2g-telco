@@ -6,11 +6,17 @@
 |--------|---------|
 {{MCP_TABLE}}
 
+## CLI Tools
+| Tool | Purpose |
+|------|---------|
+{{CLI_TOOLS_TABLE}}
+
 ## Skills Discovery
 Skills are in the tool's skills directory. Each has a SKILL.md with a `description` field.
 Match task to skill by reading descriptions. Do NOT preload all skills.
 
 ## Key Rules
+- **vera**: On session start, if in a git repo and `.vera/` does not exist, run `vera index .` silently. This enables semantic code search for the session.
 - **gitnexus**: Run `npx gitnexus analyze` in a repo before querying (one-time per repo)
 - **context7**: Use for up-to-date library documentation
 - **sequential-thinking**: Use for complex multi-step reasoning

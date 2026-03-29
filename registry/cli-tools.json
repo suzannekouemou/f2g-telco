@@ -1,0 +1,49 @@
+{
+  "version": "1.0.0",
+  "tools": [
+    {
+      "id": "f2g-telco",
+      "name": "f2g-telco",
+      "description": "AI environment setup CLI — MCPs, providers, skills, configs",
+      "install": "npm install -g f2g-telco",
+      "location": "npx f2g-telco init"
+    },
+    {
+      "id": "chub",
+      "name": "chub",
+      "description": "API docs for agents — search/fetch/annotate",
+      "install": "go install github.com/chub-ai/chub@latest",
+      "location": "~/.local/bin/chub"
+    },
+    {
+      "id": "llmfit",
+      "name": "llmfit",
+      "description": "Right-size LLM models to hardware",
+      "install": "cargo install llmfit",
+      "location": "~/.cargo/bin/llmfit"
+    },
+    {
+      "id": "code-review-graph",
+      "name": "code-review-graph",
+      "description": "AST graph + blast-radius for reviews",
+      "install": "pip install code-review-graph",
+      "location": "~/.local/bin/code-review-graph"
+    },
+    {
+      "id": "ghgrab",
+      "name": "ghgrab",
+      "version": "1.2.0",
+      "description": "Cherry-pick files/folders from GitHub repos without full clone — TUI + agent mode (JSON)",
+      "install": "npm install -g @ghgrab/ghgrab",
+      "location": "/usr/bin/ghgrab"
+    },
+    {
+      "id": "vera",
+      "name": "vera",
+      "version": "0.11.2",
+      "description": "Semantic code search — BM25 + vector + cross-encoder reranking, 64 languages, call graphs, dead code detection. Local ONNX models, no API keys. MCP server built-in.",
+      "install": "npm install -g @vera-ai/cli && vera setup --yes",
+      "location": "~/.local/bin/vera"
+    }
+  ]
+}

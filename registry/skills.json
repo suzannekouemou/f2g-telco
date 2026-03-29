@@ -1,5 +1,5 @@
 {
-  "version": "1.2.0",
+  "version": "1.3.0",
   "sources": [
     {
       "id": "awesome-copilot",
@@ -54,6 +54,24 @@
       "description": "Writes better prompts for any AI tool — extracts 9 dimensions of intent",
       "repo": "https://github.com/nidhinjs/prompt-master.git",
       "path": ".",
+      "license": "MIT",
+      "picks": null
+    },
+    {
+      "id": "everything-claude-code",
+      "name": "Everything Claude Code",
+      "description": "25 curated skills — context-budget, deep-research, prompt-optimizer, continuous-learning-v2, codebase-onboarding, python-patterns, docker-patterns, api-design, safety-guard",
+      "repo": "affaan-m/everything-claude-code",
+      "path": "~/.agents/skills/ecc/",
+      "license": "MIT",
+      "picks": null
+    },
+    {
+      "id": "ai-agent-stack",
+      "name": "AI Agent Stack",
+      "description": "6 skills — sdd-eval, budget-guard, worktree-agent, model-tournament, ci-watcher, rag-search",
+      "repo": "DavidBritto/ai-agent-stack",
+      "path": "~/.agents/skills/ai-agent-stack/",
       "license": "MIT",
       "picks": null
     }
