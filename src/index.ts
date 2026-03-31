@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
+import { createRequire } from 'module';
 import chalk from 'chalk';
 import { initCommand } from './commands/init.js';
 import { doctorCommand } from './commands/doctor.js';
@@ -10,6 +11,7 @@ import { logSystemInfo, getLogPath } from './utils/fileLogger.js';
 import { addCommand } from './commands/add.js';
 import { removeCommand } from './commands/remove.js';
 import { setVerbose, log } from './utils/logger.js';
+import { checkForUpdates } from './utils/updateCheck.js';
 
 // Handle Ctrl+C gracefully
 process.on('SIGINT', () => {
@@ -84,5 +86,12 @@ program
   .description('Show current configuration at a glance')
   .action(statusCommand);
 
-// Log system info on every invocation
-logSystemInfo().then(() => program.parse());
+// Get package version for update check
+const _require = createRequire(import.meta.url);
+const _pkgVersion: string = _require('../package.json').version || '0.0.0';
+
+// Log system info, run command, then check for updates
+logSystemInfo().then(async () => {
+  await program.parseAsync();
+  await checkForUpdates(_pkgVersion);
+});
