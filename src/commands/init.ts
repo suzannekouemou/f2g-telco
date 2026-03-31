@@ -535,6 +535,16 @@ Match task to skill by reading descriptions. Do NOT preload all skills.
 - **mem0**: Check for prior context before starting work, save checkpoints after major steps
 - **contextgraph**: Use for structured recall with entity relationships and provenance
 
+## Auto-Select Rules
+| Trigger | Tool |
+|---------|------|
+| Starting any task | mem0 search_memories |
+| Need library docs | context7 |
+| Complex problem | sequential-thinking |
+| Writing code | sentrux scan before + after |
+| Research | reddit search |
+| After completing work | mem0 checkpoint |
+
 ## Memory Pipeline
 \`\`\`
 mem0 (cloud, persistent) → hydrates on boot → ContextGraph (local, session-scoped)
@@ -542,6 +552,9 @@ mem0 (cloud, persistent) → hydrates on boot → ContextGraph (local, session-s
 - **mem0**: Flat text memory — preferences, facts, session context. Persists across sessions.
 - **ContextGraph**: Structured claims with entity extraction, provenance chains, trust scoring. Session-scoped, auto-hydrated from mem0 on every boot.
 - Agents use both: mem0 for persistent storage, ContextGraph for entity-aware recall + relation paths.
+
+## Session Checkpointing
+Use the session-checkpoint skill when sessions get long. Saves structured summary to mem0.
 
 ## Documentation Standard
 - **Output format**: Word (.docx) via python-docx — NOT markdown

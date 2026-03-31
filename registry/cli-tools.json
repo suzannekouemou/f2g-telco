@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0",
+  "version": "1.1.0",
   "tools": [
     {
       "id": "f2g-telco",
@@ -44,6 +44,14 @@
       "description": "Semantic code search — BM25 + vector + cross-encoder reranking, 64 languages, call graphs, dead code detection. Local ONNX models, no API keys. MCP server built-in.",
       "install": "npm install -g @vera-ai/cli && vera setup --yes",
       "location": "~/.local/bin/vera"
+    },
+    {
+      "id": "markplane",
+      "name": "markplane",
+      "version": "0.1.2",
+      "description": "Repo-level project management as markdown in git — tasks, epics, plans, notes + web UI + MCP server",
+      "install": "curl -fsSL https://raw.githubusercontent.com/zerowand01/markplane/master/install.sh | sh",
+      "location": "~/.local/bin/markplane"
     }
   ]
 }

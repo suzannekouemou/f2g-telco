@@ -1,93 +1,146 @@
 {
-  "version": "1.4.0",
+  "version": "1.5.0",
   "mcps": [
     {
       "id": "mem0",
       "name": "mem0",
       "description": "Long-term memory across sessions",
       "install": "npm install -g mem0-mcp-server",
-      "npxCommand": ["npx", "-y", "mem0-mcp-server"],
+      "npxCommand": [
+        "npx",
+        "-y",
+        "mem0-mcp-server"
+      ],
       "command": "mem0-mcp-server",
-      "requiresEnv": ["MEM0_API_KEY"],
+      "requiresEnv": [
+        "MEM0_API_KEY"
+      ],
       "envSetup": "Get free API key at https://app.mem0.ai/",
       "setupSteps": [
         "Go to: https://app.mem0.ai/",
         "Sign up for a free account",
-        "Go to Settings → API Keys → Create Key",
+        "Go to Settings \u2192 API Keys \u2192 Create Key",
         "Copy the key and paste below"
       ],
       "category": "memory",
       "free": true,
-      "autoApprove": ["add_memory", "search_memories", "get_memories"]
+      "autoApprove": [
+        "add_memory",
+        "search_memories",
+        "get_memories"
+      ]
     },
     {
       "id": "context7",
       "name": "context7",
-      "description": "Library documentation lookup — up-to-date docs for any package",
+      "description": "Library documentation lookup \u2014 up-to-date docs for any package",
       "install": "npm install -g context7-mcp",
-      "npxCommand": ["npx", "-y", "context7-mcp"],
+      "npxCommand": [
+        "npx",
+        "-y",
+        "context7-mcp"
+      ],
       "command": "context7-mcp",
       "requiresEnv": [],
       "category": "knowledge",
       "free": true,
-      "autoApprove": ["resolve-library-id", "query-docs"]
+      "autoApprove": [
+        "resolve-library-id",
+        "query-docs"
+      ]
     },
     {
       "id": "sequential-thinking",
       "name": "sequential-thinking",
       "description": "Complex multi-step reasoning with branching and revision",
       "install": "npm install -g mcp-server-sequential-thinking",
-      "npxCommand": ["npx", "-y", "mcp-server-sequential-thinking"],
+      "npxCommand": [
+        "npx",
+        "-y",
+        "mcp-server-sequential-thinking"
+      ],
       "command": "mcp-server-sequential-thinking",
       "requiresEnv": [],
       "category": "reasoning",
       "free": true,
-      "autoApprove": ["sequentialthinking"]
+      "autoApprove": [
+        "sequentialthinking"
+      ]
     },
     {
       "id": "memory",
       "name": "memory",
-      "description": "Knowledge graph — entities and relations",
+      "description": "Knowledge graph \u2014 entities and relations",
       "install": "npm install -g mcp-server-memory",
-      "npxCommand": ["npx", "-y", "mcp-server-memory"],
+      "npxCommand": [
+        "npx",
+        "-y",
+        "mcp-server-memory"
+      ],
       "command": "mcp-server-memory",
       "requiresEnv": [],
       "category": "memory",
       "free": true,
-      "autoApprove": ["create_entities", "search_nodes", "read_graph", "add_observations", "open_nodes", "create_relations"]
+      "autoApprove": [
+        "create_entities",
+        "search_nodes",
+        "read_graph",
+        "add_observations",
+        "open_nodes",
+        "create_relations"
+      ]
     },
     {
       "id": "filesystem",
       "name": "filesystem",
-      "description": "File operations — read, write, search",
+      "description": "File operations \u2014 read, write, search",
       "install": "npm install -g mcp-server-filesystem",
-      "npxCommand": ["npx", "-y", "mcp-server-filesystem"],
+      "npxCommand": [
+        "npx",
+        "-y",
+        "mcp-server-filesystem"
+      ],
       "command": "mcp-server-filesystem",
       "requiresEnv": [],
       "category": "core",
       "free": true,
-      "autoApprove": ["read_file", "list_directory"]
+      "autoApprove": [
+        "read_file",
+        "list_directory"
+      ]
     },
     {
       "id": "fetch",
       "name": "fetch",
-      "description": "HTTP requests — fetch URLs and APIs",
+      "description": "HTTP requests \u2014 fetch URLs and APIs",
       "install": "npm install -g mcp-server-fetch",
-      "npxCommand": ["npx", "-y", "mcp-server-fetch"],
+      "npxCommand": [
+        "npx",
+        "-y",
+        "mcp-server-fetch"
+      ],
       "command": "mcp-server-fetch",
       "requiresEnv": [],
       "category": "core",
       "free": true,
-      "autoApprove": ["fetch"]
+      "autoApprove": [
+        "fetch"
+      ]
     },
     {
       "id": "github",
       "name": "github",
       "description": "GitHub PRs, issues, commits, branches",
       "install": "npm install -g mcp-server-github",
-      "npxCommand": ["npx", "-y", "mcp-server-github"],
+      "npxCommand": [
+        "npx",
+        "-y",
+        "mcp-server-github"
+      ],
       "command": "mcp-server-github",
-      "requiresEnv": ["GITHUB_PERSONAL_ACCESS_TOKEN"],
+      "requiresEnv": [
+        "GITHUB_PERSONAL_ACCESS_TOKEN"
+      ],
       "envSetup": "Create at https://github.com/settings/tokens",
       "setupSteps": [
         "Go to: https://github.com/settings/tokens",
@@ -104,7 +157,11 @@
       "name": "playwright",
       "description": "Browser automation and E2E testing",
       "install": "npm install -g playwright-mcp",
-      "npxCommand": ["npx", "-y", "playwright-mcp"],
+      "npxCommand": [
+        "npx",
+        "-y",
+        "playwright-mcp"
+      ],
       "command": "playwright-mcp",
       "requiresEnv": [],
       "category": "testing",
@@ -114,9 +171,13 @@
     {
       "id": "postgresql",
       "name": "postgresql",
-      "description": "Database queries — PostgreSQL",
+      "description": "Database queries \u2014 PostgreSQL",
       "install": "npm install -g mcp-server-postgres",
-      "npxCommand": ["npx", "-y", "mcp-server-postgres"],
+      "npxCommand": [
+        "npx",
+        "-y",
+        "mcp-server-postgres"
+      ],
       "command": "mcp-server-postgres",
       "requiresEnv": [],
       "category": "dev",
@@ -128,10 +189,19 @@
       "name": "notion",
       "description": "Read/write Notion pages and databases",
       "install": "npm install -g notion-mcp-server",
-      "npxCommand": ["npx", "-y", "notion-mcp-server"],
+      "npxCommand": [
+        "npx",
+        "-y",
+        "notion-mcp-server"
+      ],
       "command": "npx",
-      "args": ["-y", "notion-mcp-server"],
-      "requiresEnv": ["NOTION_TOKEN"],
+      "args": [
+        "-y",
+        "notion-mcp-server"
+      ],
+      "requiresEnv": [
+        "NOTION_TOKEN"
+      ],
       "envSetup": "Create integration at https://www.notion.so/my-integrations",
       "setupSteps": [
         "Go to: https://www.notion.so/my-integrations",
@@ -148,10 +218,16 @@
       "name": "mermaid",
       "description": "Render mermaid diagrams to PNG/SVG",
       "install": "npm install -g mermaid-mcp-server",
-      "npxCommand": ["npx", "-y", "mermaid-mcp-server"],
+      "npxCommand": [
+        "npx",
+        "-y",
+        "mermaid-mcp-server"
+      ],
       "command": "mermaid-mcp-server",
       "requiresEnv": [],
-      "env": { "CONTENT_IMAGE_SUPPORTED": "false" },
+      "env": {
+        "CONTENT_IMAGE_SUPPORTED": "false"
+      },
       "category": "docs",
       "free": true,
       "autoApprove": []
@@ -159,20 +235,32 @@
     {
       "id": "gitnexus",
       "name": "gitnexus",
-      "description": "Codebase knowledge graph — dependency and call-chain analysis",
+      "description": "Codebase knowledge graph \u2014 dependency and call-chain analysis",
       "install": "npm install -g gitnexus",
-      "npxCommand": ["npx", "-y", "gitnexus", "mcp"],
+      "npxCommand": [
+        "npx",
+        "-y",
+        "gitnexus",
+        "mcp"
+      ],
       "command": "npx",
-      "args": ["gitnexus", "mcp"],
+      "args": [
+        "gitnexus",
+        "mcp"
+      ],
       "requiresEnv": [],
       "category": "dev",
       "free": true,
-      "autoApprove": ["query", "context", "impact"]
+      "autoApprove": [
+        "query",
+        "context",
+        "impact"
+      ]
     },
     {
       "id": "contextgraph",
       "name": "contextgraph",
-      "description": "Governed shared memory — provenance, entity extraction, trust scoring. Auto-hydrates from mem0.",
+      "description": "Governed shared memory \u2014 provenance, entity extraction, trust scoring. Auto-hydrates from mem0.",
       "install": "pip install contextgraph[server,mcp]",
       "command": "contextgraph-mcp",
       "requiresEnv": [],
@@ -180,48 +268,176 @@
       "free": true,
       "python": true,
       "bridge": true,
-      "autoApprove": ["contextgraph_store", "contextgraph_recall", "contextgraph_relate", "contextgraph_watch", "contextgraph_notifications", "contextgraph_review"]
+      "autoApprove": [
+        "contextgraph_store",
+        "contextgraph_recall",
+        "contextgraph_relate",
+        "contextgraph_watch",
+        "contextgraph_notifications",
+        "contextgraph_review"
+      ]
     },
     {
       "id": "reddit",
       "name": "reddit",
-      "description": "Search Reddit, browse subreddits, read posts + comments — no API key",
+      "description": "Search Reddit, browse subreddits, read posts + comments \u2014 no API key",
       "install": "pipx install reddit-no-auth-mcp-server",
       "command": "uvx",
-      "npxCommand": ["uvx", "reddit-no-auth-mcp-server"],
-      "args": ["reddit-no-auth-mcp-server"],
+      "npxCommand": [
+        "uvx",
+        "reddit-no-auth-mcp-server"
+      ],
+      "args": [
+        "reddit-no-auth-mcp-server"
+      ],
       "requiresEnv": [],
       "category": "knowledge",
       "free": true,
       "uvx": true,
-      "autoApprove": ["reddit_search", "reddit_search_subreddit", "reddit_get_post", "reddit_get_subreddit_posts", "reddit_get_user", "reddit_get_user_posts"]
+      "autoApprove": [
+        "reddit_search",
+        "reddit_search_subreddit",
+        "reddit_get_post",
+        "reddit_get_subreddit_posts",
+        "reddit_get_user",
+        "reddit_get_user_posts"
+      ]
     },
     {
       "id": "sentrux",
       "name": "sentrux",
-      "description": "Code quality sensor — scan, health score, rules check, test gaps, git stats. 52 languages",
+      "description": "Code quality sensor \u2014 scan, health score, rules check, test gaps, git stats. 52 languages",
       "install": "curl -fsSL https://sentrux.dev/install.sh | sh",
       "command": "sentrux",
-      "npxCommand": ["sentrux", "--mcp"],
-      "args": ["--mcp"],
+      "npxCommand": [
+        "sentrux",
+        "--mcp"
+      ],
+      "args": [
+        "--mcp"
+      ],
       "requiresEnv": [],
       "category": "dev",
       "free": true,
       "binary": true,
-      "autoApprove": ["scan", "health", "check_rules", "git_stats", "test_gaps"]
+      "autoApprove": [
+        "scan",
+        "health",
+        "check_rules",
+        "git_stats",
+        "test_gaps"
+      ]
     },
     {
       "id": "vera",
       "name": "vera",
-      "description": "Semantic code search — BM25 + vector + cross-encoder reranking, 64 languages, call graphs, dead code detection. Local ONNX models, no API keys.",
+      "description": "Semantic code search \u2014 BM25 + vector + cross-encoder reranking, 64 languages, call graphs, dead code detection. Local ONNX models, no API keys.",
       "install": "npm install -g @vera-ai/cli && vera setup --yes",
       "command": "vera",
-      "npxCommand": ["vera", "mcp"],
-      "args": ["mcp"],
+      "npxCommand": [
+        "vera",
+        "mcp"
+      ],
+      "args": [
+        "mcp"
+      ],
       "requiresEnv": [],
       "category": "dev",
       "free": true,
-      "autoApprove": ["index_project", "search_code", "regex_search", "get_overview", "get_stats", "find_references", "find_dead_code", "update_project", "watch_project"]
+      "autoApprove": [
+        "index_project",
+        "search_code",
+        "regex_search",
+        "get_overview",
+        "get_stats",
+        "find_references",
+        "find_dead_code",
+        "update_project",
+        "watch_project"
+      ]
+    },
+    {
+      "id": "youtrack",
+      "name": "youtrack-mcp",
+      "description": "YouTrack project management \u2014 issues, comments, state/priority/assignee updates. Set NODE_ENV=production to suppress stdout logs.",
+      "install": "npm install -g youtrack-mcp",
+      "npxCommand": [
+        "npx",
+        "-y",
+        "youtrack-mcp"
+      ],
+      "command": "node",
+      "args": [
+        "/usr/lib/node_modules/youtrack-mcp/dist/index.js"
+      ],
+      "requiresEnv": [
+        "YOUTRACK_BASE_URL",
+        "YOUTRACK_TOKEN"
+      ],
+      "envSetup": "Get token at https://<your-instance>.youtrack.cloud/users/me \u2192 Authentication \u2192 New Token",
+      "setupSteps": [
+        "Go to: https://<your-instance>.youtrack.cloud/users/me",
+        "Click 'Authentication' tab",
+        "Click 'New token...'",
+        "Select scope: YouTrack (full access)",
+        "Copy the token and paste below"
+      ],
+      "env": {
+        "NODE_ENV": "production"
+      },
+      "category": "project-management",
+      "free": true,
+      "autoApprove": [
+        "query_issues",
+        "create_issue",
+        "update_issue",
+        "get_issue_comments",
+        "add_issue_comment",
+        "get_project_status",
+        "get_project_issues_summary",
+        "get_project_timeline",
+        "bulk_update_issues",
+        "search_users"
+      ]
+    },
+    {
+      "id": "markplane",
+      "name": "markplane",
+      "description": "Repo-level project management as markdown \u2014 tasks, epics, plans, notes. Token-efficient .context/ summaries.",
+      "install": "curl -fsSL https://raw.githubusercontent.com/zerowand01/markplane/master/install.sh | sh",
+      "command": "markplane",
+      "args": [
+        "mcp",
+        "--project",
+        "."
+      ],
+      "requiresEnv": [],
+      "category": "project-management",
+      "free": true,
+      "binary": true,
+      "autoApprove": [
+        "markplane_summary",
+        "markplane_query",
+        "markplane_show",
+        "markplane_add",
+        "markplane_update",
+        "markplane_move",
+        "markplane_archive",
+        "markplane_unarchive",
+        "markplane_link",
+        "markplane_graph",
+        "markplane_plan",
+        "markplane_promote",
+        "markplane_check",
+        "markplane_context",
+        "markplane_sync"
+      ],
+      "npxCommand": [
+        "markplane",
+        "mcp",
+        "--project",
+        "."
+      ]
     }
   ]
 }

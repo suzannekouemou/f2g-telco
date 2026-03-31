@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0] - 2026-03-30
+
+### Added
+- **youtrack-mcp** — YouTrack project management (10 tools: query_issues, create_issue, update_issue, comments, project status/timeline). Requires YOUTRACK_URL + YOUTRACK_TOKEN. Set NODE_ENV=production to suppress stdout logs.
+- **markplane** MCP — repo-level project management as markdown (15 tools). Single binary, zero infra.
+- **markplane** CLI v0.1.2 — tasks, epics, plans, notes in git
+- **harness** skill source (revfactory/harness, Apache-2.0) — meta-skill that generates agent teams + skills with 6 architecture patterns
+
+### Changed
+- Registry versions: mcps.json → 1.5.0, cli-tools.json → 1.1.0, skills.json → 1.4.0
+
 ## [0.1.9] - 2026-03-29
 
 ### Added
@@ -39,5 +50,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Doctor checks ~/.local/bin in PATH
 - Orchestrator agent templates for Crush and Kiro
 
+[0.2.0]: https://github.com/suzannekouemou/f2g-telco/releases/tag/v0.2.0
 [0.1.9]: https://github.com/suzannekouemou/f2g-telco/releases/tag/v0.1.9
 [0.1.0]: https://github.com/suzannekouemou/f2g-telco/releases/tag/v0.1.0
