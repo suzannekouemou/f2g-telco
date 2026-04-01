@@ -579,9 +579,16 @@ ${cliRows}
 Skills are in \`${paths.skills}\`. Each has a SKILL.md with a \`description\` field.
 Match task to skill by reading descriptions. Do NOT preload all skills.
 
+## MCP Initialization (agents run these automatically before first use)
+| MCP | Init Command | When | Check |
+|-----|-------------|------|-------|
+| vera | \`vera index .\` | First time in a repo, if \`.vera/\` missing | \`ls .vera/\` |
+| gitnexus | \`npx gitnexus analyze\` | First time in a repo, if \`.gitnexus/\` missing | \`ls .gitnexus/\` |
+| sentrux | Installed via f2g-telco (binary) | Once per machine | \`which sentrux\` |
+| contextgraph | Installed via f2g-telco (pip) | Once per machine | \`python3 -c "import contextgraph"\` |
+| code-review-graph | \`code-review-graph build\` | First time in a project | \`ls .code-review-graph/\` |
+
 ## Key Rules
-- **vera**: On session start, if in a git repo and \`.vera/\` does not exist, run \`vera index .\` silently. This enables semantic code search for the session.
-- **gitnexus**: Run \`npx gitnexus analyze\` in a repo before querying (one-time per repo)
 - **context7**: Use for up-to-date library documentation before coding against third-party APIs
 - **sequential-thinking**: Use for complex multi-step reasoning
 - **mem0**: Check for prior context before starting work, save checkpoints after major steps

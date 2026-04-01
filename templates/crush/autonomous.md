@@ -19,6 +19,11 @@ Skills are discovered from skills_paths. Load only what's needed by reading SKIL
 | Diagrams | mermaid generate |
 | After completing work | mem0 checkpoint |
 
+### MCP Init Check (automatic before first use)
+- **vera**: if `.vera/` missing → run `vera index .` silently
+- **gitnexus**: if `.gitnexus/` missing → run `npx gitnexus analyze` silently
+- **sentrux**: if `which sentrux` fails → skip (needs manual install)
+
 ## AUTO-SELECT: Skills (load automatically when trigger matches)
 | Trigger | Skill |
 |---------|-------|

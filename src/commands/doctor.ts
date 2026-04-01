@@ -83,6 +83,30 @@ export async function doctorCommand() {
     }
   }
 
+  // MCP Initialization (binary tools)
+  log.header('MCP Initialization');
+  if (config.installedMcps.includes('vera')) {
+    try {
+      execSync('which vera 2>/dev/null', { encoding: 'utf-8' });
+      check('vera binary', true, 'found');
+    } catch {
+      advisory('vera binary', false, 'install: curl -fsSL https://github.com/nicholasgasior/vera/releases/latest/download/install.sh | sh');
+    }
+  }
+  if (config.installedMcps.includes('sentrux')) {
+    try {
+      execSync('which sentrux 2>/dev/null', { encoding: 'utf-8' });
+      check('sentrux binary', true, 'found');
+    } catch {
+      advisory('sentrux binary', false, 'install: curl -fsSL https://raw.githubusercontent.com/sentrux/sentrux/main/install.sh | sh');
+    }
+  }
+  if (config.installedMcps.includes('contextgraph')) {
+    const bridgePath = path.join(home, '.local', 'bin', 'contextgraph-mcp');
+    const bridgeExists = await fs.pathExists(bridgePath);
+    check('contextgraph bridge', bridgeExists, bridgeExists ? 'found' : 'run: npx f2g-telco add contextgraph');
+  }
+
   // INVENTORY.md
   log.header('Discovery');
   check('INVENTORY.md', await fs.pathExists(config.paths.inventory), config.paths.inventory);
