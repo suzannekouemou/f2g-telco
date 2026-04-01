@@ -587,15 +587,32 @@ Match task to skill by reading descriptions. Do NOT preload all skills.
 - **mem0**: Check for prior context before starting work, save checkpoints after major steps
 - **contextgraph**: Use for structured recall with entity relationships and provenance
 
-## Auto-Select Rules
+## Auto-Select: MCP Tools (agents use these automatically)
 | Trigger | Tool |
 |---------|------|
 | Starting any task | mem0 search_memories |
 | Need library docs | context7 |
 | Complex problem | sequential-thinking |
 | Writing code | sentrux scan before + after |
+| Find code patterns | gitnexus query |
+| Entity relationships | contextgraph recall |
 | Research | reddit search |
+| Diagrams | mermaid generate |
 | After completing work | mem0 checkpoint |
+
+## Auto-Select: Skills (agents load these automatically)
+| Trigger | Skill |
+|---------|-------|
+| New feature/product idea | /office-hours (gstack) |
+| Architecture review | /plan-eng-review (gstack) |
+| Code review before merge | /review (gstack) |
+| Debugging | /investigate (gstack) |
+| QA testing | /qa (gstack) |
+| Security concerns | /cso (gstack) |
+| Ready to ship | /ship (gstack) |
+| Writing tests | test-driven-development (superpowers) |
+| Frontend UI work | taste-skill |
+| Writing prompts | prompt-master |
 
 ## Memory Pipeline
 \`\`\`

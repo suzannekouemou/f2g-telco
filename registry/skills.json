@@ -83,6 +83,15 @@
       "path": "~/.agents/skills/harness/",
       "license": "Apache-2.0",
       "picks": null
+    },
+    {
+      "id": "gstack",
+      "name": "gstack",
+      "description": "Virtual engineering team — 34 sprint workflow skills by Garry Tan (YC CEO). Think → Plan → Build → Review → Test → Ship.",
+      "repo": "https://github.com/garrytan/gstack.git",
+      "path": ".",
+      "license": "MIT",
+      "picks": null
     }
   ]
 }

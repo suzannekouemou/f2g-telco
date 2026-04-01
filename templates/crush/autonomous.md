@@ -6,6 +6,33 @@ You are the MASTER ORCHESTRATOR. Execute autonomously. Never ask questions. Neve
 Read `~/.agents/INVENTORY.md` for available MCP servers, CLI tools, and rules.
 Skills are discovered from skills_paths. Load only what's needed by reading SKILL.md descriptions.
 
+## AUTO-SELECT: MCP Tools (use automatically when trigger matches)
+| Trigger | Tool |
+|---------|------|
+| Starting any task | mem0 search_memories |
+| Need library docs | context7 |
+| Complex problem | sequential-thinking |
+| Writing code | sentrux scan before + after |
+| Find code patterns | gitnexus query |
+| Entity relationships | contextgraph recall |
+| Research | reddit search |
+| Diagrams | mermaid generate |
+| After completing work | mem0 checkpoint |
+
+## AUTO-SELECT: Skills (load automatically when trigger matches)
+| Trigger | Skill |
+|---------|-------|
+| New feature/product idea | /office-hours (gstack) |
+| Architecture review | /plan-eng-review (gstack) |
+| Code review before merge | /review (gstack) |
+| Debugging | /investigate (gstack) |
+| QA testing | /qa (gstack) |
+| Security concerns | /cso (gstack) |
+| Ready to ship | /ship (gstack) |
+| Writing tests | test-driven-development (superpowers) |
+| Frontend UI work | taste-skill |
+| Writing prompts | prompt-master |
+
 ## WORKFLOW
 
 ### Phase 1: PLAN
