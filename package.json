@@ -1,6 +1,6 @@
 {
   "name": "f2g-telco",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "description": "CLI tool to supercharge AI coding environments — installs MCPs, skills, agents, and memory pipelines",
   "type": "module",
   "bin": {

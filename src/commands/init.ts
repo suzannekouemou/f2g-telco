@@ -576,7 +576,7 @@ ${rows}
 ${cliRows}
 
 ## Skills Discovery
-Skills are in \`${paths.skills}\`. Each has a SKILL.md with a \`description\` field.
+Skills are in \`${paths.skills}\`. To find a skill: list the directory, then read the SKILL.md inside the matching folder. Do NOT read the directory as a file.
 Match task to skill by reading descriptions. Do NOT preload all skills.
 
 ## MCP Initialization (agents run these automatically before first use)
