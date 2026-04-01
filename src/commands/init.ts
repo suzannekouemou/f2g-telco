@@ -5,6 +5,7 @@ import fs from 'fs-extra';
 import path from 'path';
 import os from 'os';
 import { execSync } from 'child_process';
+import ora from 'ora';
 import { detectEnvironment } from '../utils/detect.js';
 import { log, isVerbose } from '../utils/logger.js';
 import { saveConfig, loadConfig, getToolPaths, type F2GConfig } from '../utils/config.js';
@@ -350,11 +351,62 @@ async function runInit(options: InitOptions) {
     tool = selectedTool;
   }
 
-  // Step 3: Choose provider
-  log.header('Step 3 — Choose your AI provider');
+  // Step 3: Copilot authentication (Crush only)
   const providers = await fs.readJson(path.join(registryDir, 'providers.json'));
   let provider = options.provider;
+
+  if (tool === 'crush') {
+    log.header('Step 3 — GitHub Copilot Setup (free)');
+
+    // Check if already authenticated
+    const authFile = path.join(os.homedir(), '.config', 'crush', 'auth.json');
+    let copilotAuthenticated = false;
+    try {
+      execSync('crush auth status 2>/dev/null', { stdio: 'pipe' });
+      copilotAuthenticated = true;
+    } catch {
+      copilotAuthenticated = await fs.pathExists(authFile);
+    }
+
+    if (copilotAuthenticated) {
+      log.success('Copilot already authenticated');
+      provider = 'copilot';
+    } else {
+      console.log(chalk.cyan('  ┌──────────────────────────────────────────────────────┐'));
+      console.log(chalk.cyan('  │') + '  GitHub Copilot gives you access to Claude, GPT-5,   ' + chalk.cyan('│'));
+      console.log(chalk.cyan('  │') + '  Gemini, Grok and more — ' + chalk.green('free tier included') + '.       ' + chalk.cyan('│'));
+      console.log(chalk.cyan('  │') + '                                                      ' + chalk.cyan('│'));
+      console.log(chalk.cyan('  │') + '  1. Go to ' + chalk.underline('github.com/settings/copilot') + '            ' + chalk.cyan('│'));
+      console.log(chalk.cyan('  │') + '  2. Click "Enable Copilot" (choose free plan)        ' + chalk.cyan('│'));
+      console.log(chalk.cyan('  │') + '  3. Come back here — we will authenticate for you    ' + chalk.cyan('│'));
+      console.log(chalk.cyan('  └──────────────────────────────────────────────────────┘'));
+
+      const { ready } = await inquirer.prompt([{
+        type: 'list',
+        name: 'ready',
+        message: 'What would you like to do?',
+        choices: [
+          { name: 'Authenticate with GitHub Copilot now', value: 'auth' },
+          { name: 'Skip — I will set up a provider manually later', value: 'skip' },
+        ],
+      }]);
+
+      if (ready === 'auth') {
+        const spinner = ora('Launching Copilot authentication...').start();
+        try {
+          execSync('crush login copilot', { stdio: 'inherit', timeout: 120_000 });
+          spinner.succeed('Copilot authenticated!');
+          provider = 'copilot';
+        } catch {
+          spinner.warn('Authentication did not complete — you can retry later with: crush login copilot');
+        }
+      }
+    }
+  }
+
+  // Step 4: Choose provider (skip if copilot already set)
   if (!provider) {
+    log.header('Step 4 — Choose your AI provider');
     const choices = providers.providers
       .filter((p: ProviderEntry) => p.tools.includes(tool!))
       .map((p: ProviderEntry) => ({
@@ -372,8 +424,8 @@ async function runInit(options: InitOptions) {
 
   const providerConfig = providers.providers.find((p: ProviderEntry) => p.id === provider);
 
-  // Step 4: Guided API key collection
-  log.header('Step 4 — Service Configuration');
+  // Step 5: Guided API key collection
+  log.header('Step 5 — Service Configuration');
   const mcpRegistry = await fs.readJson(path.join(registryDir, 'mcps.json'));
 
   let envVars: Record<string, string> = {};
@@ -385,8 +437,8 @@ async function runInit(options: InitOptions) {
     skippedMcps = result.skippedMcps;
   }
 
-  // Step 5: Install MCPs
-  log.header('Step 5 — Installing MCP servers');
+  // Step 6: Install MCPs
+  log.header('Step 6 — Installing MCP servers');
   const mcpsToInstall = mcpRegistry.mcps.filter((mcp: McpEntry) =>
     !skippedMcps.has(mcp.id) && mcp.requiresEnv.every((key: string) => envVars[key] || process.env[key])
   );
@@ -397,12 +449,12 @@ async function runInit(options: InitOptions) {
     await installContextGraphBridge(os.homedir(), envVars);
   }
 
-  // Step 6: Write complete tool config
-  log.header('Step 6 — Writing tool configuration');
+  // Step 7: Write complete tool config
+  log.header('Step 7 — Writing tool configuration');
   await writeToolConfig(mcpRegistry.mcps, installedIds, tool!, envVars, providerConfig);
 
-  // Step 7: Install orchestrator
-  log.header('Step 7 — Setting up orchestrator agent');
+  // Step 8: Install orchestrator
+  log.header('Step 8 — Setting up orchestrator agent');
   const toolPaths = getToolPaths(tool!);
   const home = os.homedir();
 
@@ -421,15 +473,15 @@ async function runInit(options: InitOptions) {
     log.success('Orchestrator written to ~/.kiro/settings/orchestrator.md');
   }
 
-  // Step 8: Install skills
-  log.header('Step 8 — Installing skills');
+  // Step 9: Install skills
+  log.header('Step 9 — Installing skills');
   const skillsRegistry = await fs.readJson(path.join(registryDir, 'skills.json'));
   await fs.ensureDir(toolPaths.skills);
   const skillCount = await installSkills(skillsRegistry.sources, toolPaths.skills);
   log.success(`${skillCount} skills symlinked`);
 
-  // Step 9: Generate INVENTORY.md
-  log.header('Step 9 — Generating INVENTORY.md');
+  // Step 10: Generate INVENTORY.md
+  log.header('Step 10 — Generating INVENTORY.md');
   const inventoryPath = path.join(home, '.agents', 'INVENTORY.md');
   await fs.ensureDir(path.dirname(inventoryPath));
   await generateInventory(inventoryPath, installedIds, mcpRegistry.mcps, tool!);
